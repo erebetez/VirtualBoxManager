@@ -21,3 +21,6 @@ HEADERS  += mainwindow.h \
     virtualboximpl.h
 
 FORMS    += mainwindow.ui
+
+OTHER_FILES += \
+    README.txt
