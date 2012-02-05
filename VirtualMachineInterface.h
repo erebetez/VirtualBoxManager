@@ -20,8 +20,9 @@ public:
     virtual QString description() const { return QString();}
 
 
-    virtual QStringList listVm() const { return QStringList(); }
+    virtual QList<QByteArray> listVmUUIDs() const { return QList<QByteArray> (); }
 
+    virtual QHash<QByteArray, QByteArray>  VlistVmInfo( QByteArray id ) { return QHash<QByteArray, QByteArray>  (); }
 
     virtual bool startVm( int machine ) const { return false; }
 

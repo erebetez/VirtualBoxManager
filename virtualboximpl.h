@@ -3,6 +3,8 @@
 
 #include "VirtualMachineInterface.h"
 
+
+
 class VirtualBoxImpl : public VirtualMachineInterface
 {
 public:
@@ -15,7 +17,9 @@ public:
     virtual QString description() const;
 
 
-    virtual QStringList listVm();
+    virtual QList<QByteArray>  listVmUUIDs();
+
+    virtual QHash<QByteArray, QByteArray>   listVmInfo( QByteArray id );
 
     virtual bool startVm( int machine ) const;
 
@@ -23,7 +27,10 @@ public:
 private:
     VirtualBoxImpl();
 
-    QString vBoxProcess( const QStringList param ) const;
+
+    QList<QByteArray> vBoxManageProcess( const QStringList param ) const;
+
+    QByteArray removeSurroundingChar( QByteArray string, const char removeChar );
 
 };
 
