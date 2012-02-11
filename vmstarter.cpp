@@ -5,18 +5,52 @@
 #include <QPushButton>
 #include <QTreeWidget>
 #include <QHash>
-#include <QtSql/QSqlQuery>
-
+#include <QtSql>
 
 
 #include <QDebug>
 
 
-VmStarter::VmStarter(QWidget *parent)
-    : QWidget(parent)
+VmStarter::VmStarter(QObject *parent)
+    : QObject(parent)
 {
+    if( connectToDatabase()) {
+        initDatabase();
+    }
+}
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+bool VmStarter::connectToDatabase()
+{
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+//     db.setDatabaseName(":memory:");
+     db.setDatabaseName("/home/etienne/Data/Programming/QT4/VirtualBoxManager/test01.db");
+//    db.setDatabaseName("/home/etienne/Data/Programming/QT4/VirtualBoxManager/test02.db");
+
+    if (!db.open()) {
+        qDebug() << db.lastError();
+        return false;
+    }
+    return true;
+}
+
+void VmStarter::initDatabase()
+{
+    QSqlQuery query;
+
+    query.exec("create table IF NOT EXISTS virtualmachines (uuid PRIMARY KEY, "
+               "name, "
+               "host, "
+               "ostype, "
+               "state, "
+               "memory, "
+               "cpumax "
+               ")"
+              );
+    qDebug() << query.lastError();
+}
+
+
+void VmStarter::populateDb(){
 
     // Currently there is only the SSH impl
     m_vmInstance = VirtualBoxSSHImpl::instance();
@@ -29,53 +63,26 @@ VmStarter::VmStarter(QWidget *parent)
 
     qDebug() << virtualMachineList;
 
-
-    QTreeWidget *treeWidget = new QTreeWidget();
-    QList<QTreeWidgetItem *> items;
-
     foreach(QByteArray vitualMachine, virtualMachineList){
         QHash<QByteArray, QByteArray> vitualMachineInfo = VirtualBoxSSHImpl::instance()->listVmInfo(vitualMachine);
 
         qDebug() << vitualMachineInfo["name"];
 
-        QTreeWidgetItem *virtualMachines = new QTreeWidgetItem(treeWidget);
-        virtualMachines->setText(0, vitualMachineInfo.value("name"));
+        QSqlQuery query;
+        query.prepare("INSERT INTO virtualmachines (uuid, name, host, ostype, state, memory, cpumax) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?)");
 
-        QTreeWidgetItem *virtualMachineInfo = new QTreeWidgetItem(virtualMachines);
-        virtualMachineInfo->setText(0, tr("UUID:") + vitualMachineInfo.value("UUID"));
-
-        QTreeWidgetItem *virtualMachineInfo2 = new QTreeWidgetItem(virtualMachines);
-        virtualMachineInfo2->setText(0, tr("Type:") + vitualMachineInfo.value("ostype"));
-
-        items.append(virtualMachines);
+        query.bindValue(0, vitualMachineInfo["UUID"]);
+        query.bindValue(1, vitualMachineInfo["name"]);
+        query.bindValue(2, "localhost");
+        query.bindValue(3, vitualMachineInfo["ostype"]);
+        query.bindValue(4, vitualMachineInfo["state"]);
+        query.bindValue(5, vitualMachineInfo["memory"]);
+        query.bindValue(6, vitualMachineInfo["cpumax"]);
+        query.exec();
     }
 
-
-    treeWidget->insertTopLevelItems(0, items);
-
-
-    // TODO Put the data into a db. Use SQLTableModel to display.
-//    QSqlQuery query;
-//    query.prepare("INSERT INTO vm (uuid, name, state, memory) "
-//                  "VALUES (?, ?, ?, ?)");
-
-//    query.bindValue(0, 1001);
-//    query.bindValue(1, "Bart");
-//    query.bindValue(2, "Simpson");
-//    query.exec();
-
-
-
-
-    QPushButton *vmStartButton = new QPushButton(tr("Start"), this);
-
-
-    layout->addWidget(treeWidget);
-    layout->addWidget(vmStartButton);
-
-    connect( vmStartButton, SIGNAL( pressed() ),
-             this, SLOT( startVirtualMachine() ) );
-
+    emit dbRefreshed();
 }
 
 
@@ -83,7 +90,3 @@ VmStarter::~VmStarter(){
 }
 
 
-void VmStarter::startVirtualMachine(){
-    qDebug() << "Button Pressend";
-
-}

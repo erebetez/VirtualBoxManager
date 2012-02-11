@@ -1,24 +1,29 @@
 #ifndef VMSTARTER_H
 #define VMSTARTER_H
 
-#include <QWidget>
+#include <QObject>
 
 #include "virtualboxsshimpl.h"
 
-class VmStarter: public QWidget
+class VmStarter: public QObject
 {
     Q_OBJECT
 
 public:
-    VmStarter(QWidget *parent);
+    VmStarter(QObject *parent);
     virtual ~VmStarter();
 
-public slots:
-    void startVirtualMachine();
+Q_SIGNALS:
+    void dbRefreshed();
 
+public slots:
+    void populateDb();
 
 private:
     VirtualBoxSSHImpl *m_vmInstance;
+
+    bool connectToDatabase();
+    void initDatabase();
 
 };
 

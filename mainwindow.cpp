@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "vmstarter.h"
+
 
 
 #include <QDebug>
@@ -11,12 +11,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    VmStarter *starter = new VmStarter(this);
+    m_starter = new VmStarter(this);
 
-    ui->centralMainLayout->layout()->addWidget(starter);
-
-    ui->mainToolBar->addAction(tr("Settings"), this, SLOT(showSettings()) );
-
+    setUpUI();
 }
 
 MainWindow::~MainWindow()
@@ -25,14 +22,29 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::showSettings(){
-    qDebug() << "showSettings";
+void MainWindow::setUpUI()
+{
+    setDockNestingEnabled(true);
 
-    if( m_settings) {
+    ui->mainToolBar->addAction(tr("Populate"), m_starter, SLOT(populateDb()) );
+    ui->mainToolBar->addAction(tr("Settings"), this, SLOT(showSettings()) );
+
+    m_dockList = new ListDialog( this );
+    m_dockList->setFeatures( QDockWidget::AllDockWidgetFeatures );
+
+    addDockWidget( Qt::BottomDockWidgetArea, m_dockList, Qt::Vertical );
+
+
+    connect( m_starter, SIGNAL(dbRefreshed()), m_dockList, SLOT(update()));
+}
+
+
+void MainWindow::showSettings(){
+
+    if( m_settings == 0) {
+        qDebug() << "create Settings";
         m_settings = new SettingsDialog(this);
     }
     m_settings->show();
-
-
 
 }

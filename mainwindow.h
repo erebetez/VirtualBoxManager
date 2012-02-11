@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include "settingsdialog.h"
+#include "vmstarter.h"
+#include "vmlistview/listdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -18,10 +20,16 @@ public:
 
 public slots:
     void showSettings();
+
     
 private:
     Ui::MainWindow *ui;
 
+    void setUpUI();
+
+    VmStarter *m_starter;
+
+    ListDialog *m_dockList;
     SettingsDialog *m_settings;
 
 };

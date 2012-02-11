@@ -97,7 +97,7 @@ QHash<QByteArray, QByteArray>  VirtualBoxSSHImpl::listVmInfo( QByteArray id ) {
             continue;
         }
 
-        if ( key.operator==("cpuexecuteioncap") ){
+        if ( key.operator==("cpuexecutioncap") ){
             infoHash["cpumax"] = infoPair.last();
             continue;
         }
