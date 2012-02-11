@@ -13,14 +13,17 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     vmstarter.cpp \
-    virtualboximpl.cpp
+    settingsdialog.cpp \
+    virtualboxsshimpl.cpp
 
 HEADERS  += mainwindow.h \
     vmstarter.h \
     VirtualMachineInterface.h \
-    virtualboximpl.h
+    settingsdialog.h \
+    virtualboxsshimpl.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    settingsdialog.ui
 
 OTHER_FILES += \
     README.txt

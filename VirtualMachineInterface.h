@@ -26,6 +26,13 @@ public:
 
     virtual bool startVm( int machine ) const { return false; }
 
+    virtual void setLoginName(const QByteArray login) {
+        m_login = login;
+    }
+
+    virtual void setHostName(const QByteArray host){
+        m_hostname = host;
+    }
 
 //    virtual bool createVm( QStringList param ) const;
 
@@ -41,7 +48,8 @@ public:
 protected:
       VirtualMachineInterface(){}
 
-
+      QByteArray m_hostname;
+      QByteArray m_login;
 
 //    QString m_name;
 //    QString m_description;

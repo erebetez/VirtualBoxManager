@@ -7,7 +7,7 @@
 #include <QHash>
 #include <QtSql/QSqlQuery>
 
-#include "virtualboximpl.h"
+
 
 #include <QDebug>
 
@@ -18,8 +18,14 @@ VmStarter::VmStarter(QWidget *parent)
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 
+    // Currently there is only the SSH impl
+    m_vmInstance = VirtualBoxSSHImpl::instance();
 
-    QList<QByteArray> virtualMachineList = VirtualBoxImpl::instance()->listVmUUIDs();
+    m_vmInstance->setHostName("localhost");
+    m_vmInstance->setLoginName("etienne");
+
+
+    QList<QByteArray> virtualMachineList = m_vmInstance->listVmUUIDs();
 
     qDebug() << virtualMachineList;
 
@@ -28,7 +34,7 @@ VmStarter::VmStarter(QWidget *parent)
     QList<QTreeWidgetItem *> items;
 
     foreach(QByteArray vitualMachine, virtualMachineList){
-        QHash<QByteArray, QByteArray> vitualMachineInfo = VirtualBoxImpl::instance()->listVmInfo(vitualMachine);
+        QHash<QByteArray, QByteArray> vitualMachineInfo = VirtualBoxSSHImpl::instance()->listVmInfo(vitualMachine);
 
         qDebug() << vitualMachineInfo["name"];
 

@@ -5,12 +5,12 @@
 
 
 
-class VirtualBoxImpl : public VirtualMachineInterface
+class VirtualBoxSSHImpl : public VirtualMachineInterface
 {
 public:
 
-    static VirtualBoxImpl *instance();
-    virtual ~VirtualBoxImpl(){}
+    static VirtualBoxSSHImpl *instance();
+    virtual ~VirtualBoxSSHImpl(){}
 
     virtual QString name() const;
 
@@ -25,10 +25,10 @@ public:
 
 
 private:
-    VirtualBoxImpl();
+    VirtualBoxSSHImpl();
 
 
-    QList<QByteArray> vBoxManageProcess( const QStringList param ) const;
+    QList<QByteArray> vBoxManageProcess( QStringList param ) const;
 
     QByteArray removeSurroundingChar( QByteArray string, const char removeChar );
 

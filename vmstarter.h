@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "virtualboxsshimpl.h"
+
 class VmStarter: public QWidget
 {
     Q_OBJECT
@@ -16,7 +18,7 @@ public slots:
 
 
 private:
-
+    VirtualBoxSSHImpl *m_vmInstance;
 
 };
 

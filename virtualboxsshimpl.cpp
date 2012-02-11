@@ -1,34 +1,33 @@
-#include "virtualboximpl.h"
+#include "virtualboxsshimpl.h"
 
 #include <QProcess>
 #include <QTranslator>
 
 #include <QDebug>
 
-VirtualBoxImpl* VirtualBoxImpl::instance(){
-     static VirtualBoxImpl virtualBox;
+VirtualBoxSSHImpl* VirtualBoxSSHImpl::instance(){
+     static VirtualBoxSSHImpl virtualBox;
      return &virtualBox;
 }
 
-VirtualBoxImpl::VirtualBoxImpl() :
+VirtualBoxSSHImpl::VirtualBoxSSHImpl() :
     VirtualMachineInterface()
 {
     qDebug() << "Konstructor VirtualBoxImpl";
 }
 
 
-
-QString VirtualBoxImpl::name() const {
+QString VirtualBoxSSHImpl::name() const {
     return QString("VirtualBox");
 }
 
 
-QString VirtualBoxImpl::description() const {
+QString VirtualBoxSSHImpl::description() const {
     return QString("Virtualbox Interface");
 }
 
 
-QList<QByteArray>  VirtualBoxImpl::listVmUUIDs() {
+QList<QByteArray>  VirtualBoxSSHImpl::listVmUUIDs() {
 
     QList<QByteArray> vmList = vBoxManageProcess( QStringList() << "list" << "vms" );
 
@@ -51,7 +50,7 @@ QList<QByteArray>  VirtualBoxImpl::listVmUUIDs() {
     return newList;
 }
 
-QByteArray VirtualBoxImpl::removeSurroundingChar(QByteArray string, const char removeChar){
+QByteArray VirtualBoxSSHImpl::removeSurroundingChar(QByteArray string, const char removeChar){
 
     string = string.mid( string.indexOf(removeChar) + 1 );
 
@@ -62,7 +61,7 @@ QByteArray VirtualBoxImpl::removeSurroundingChar(QByteArray string, const char r
 
 ///
 // @return uuid, name, ostype, state, memory, cpumax
-QHash<QByteArray, QByteArray>  VirtualBoxImpl::listVmInfo( QByteArray id ) {
+QHash<QByteArray, QByteArray>  VirtualBoxSSHImpl::listVmInfo( QByteArray id ) {
 
     QList<QByteArray> vmInfos = vBoxManageProcess( QStringList() << "showvminfo" << id << "--details" << "--machinereadable" );
 
@@ -110,15 +109,27 @@ QHash<QByteArray, QByteArray>  VirtualBoxImpl::listVmInfo( QByteArray id ) {
 
 
 
-bool VirtualBoxImpl::startVm(int machine) const{
+bool VirtualBoxSSHImpl::startVm(int machine) const{
     return false;
 }
 
 
-QList<QByteArray> VirtualBoxImpl::vBoxManageProcess( const QStringList param ) const {
+QList<QByteArray> VirtualBoxSSHImpl::vBoxManageProcess( QStringList param ) const {
     QProcess vBoxProcess;
 
-    vBoxProcess.start("VBoxManage", param );
+    param.prepend(QString("VBoxManage"));
+    QByteArray vBoxManageCommand = param.join(" ").toLatin1();
+
+    // Needs Keypair and the public key in .ssh/authorized_keys
+    QStringList sshParamList = QStringList() << m_login + "@" + m_hostname;
+
+    vBoxProcess.start("ssh", sshParamList );
+
+    vBoxProcess.waitForStarted();
+
+    // now that we are on the host, execute the vmBoxManage
+    vBoxProcess.write(vBoxManageCommand);
+    vBoxProcess.closeWriteChannel();
 
     vBoxProcess.waitForFinished();
 
