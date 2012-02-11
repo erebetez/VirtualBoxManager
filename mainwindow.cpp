@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-
+#include <QSettings>
 
 #include <QDebug>
 
@@ -13,11 +13,39 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_starter = new VmStarter(this);
 
+
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope , "VBoxManager", "VBoxManagerSettings");
+
+    settings.beginGroup("MainWindow");
+    resize(settings.value("size", QSize(600, 400)).toSize());
+
+    // Needs to write a value and sync it in order to create the folder the first time the program is started.
+    // Database will not open otherwiese.
+    settings.setValue("size", size());
+
+    settings.endGroup();
+    settings.sync();
+
+    QString settingsPath = settings.fileName();
+    settingsPath = settingsPath.left(settingsPath.length() - QString("VBoxManagerSettings.ini").length() );
+
+
+    QString databaseFielName = settings.value("databaseFileName", QString("VBoxManagerDatabase.db")).toString();
+
+    m_starter->connectToDatabase(settingsPath + databaseFielName);
+
+
     setUpUI();
 }
 
 MainWindow::~MainWindow()
 {
+
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope , "VBoxManager", "VBoxManagerSettings");
+    settings.beginGroup("MainWindow");
+    settings.setValue("size", size());
+    settings.endGroup();
+
     delete ui;
 }
 

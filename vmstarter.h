@@ -13,6 +13,8 @@ public:
     VmStarter(QObject *parent);
     virtual ~VmStarter();
 
+    bool connectToDatabase(const QString &dataBaseFileName);
+
 Q_SIGNALS:
     void dbRefreshed();
 
@@ -22,7 +24,6 @@ public slots:
 private:
     VirtualBoxSSHImpl *m_vmInstance;
 
-    bool connectToDatabase();
     void initDatabase();
 
 };

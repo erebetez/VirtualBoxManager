@@ -14,22 +14,21 @@
 VmStarter::VmStarter(QObject *parent)
     : QObject(parent)
 {
-    if( connectToDatabase()) {
-        initDatabase();
-    }
 }
 
-bool VmStarter::connectToDatabase()
+bool VmStarter::connectToDatabase(const QString &dataBaseFileName)
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-//     db.setDatabaseName(":memory:");
-     db.setDatabaseName("/home/etienne/Data/Programming/QT4/VirtualBoxManager/test01.db");
-//    db.setDatabaseName("/home/etienne/Data/Programming/QT4/VirtualBoxManager/test02.db");
+
+    db.setDatabaseName(dataBaseFileName);
 
     if (!db.open()) {
         qDebug() << db.lastError();
         return false;
     }
+
+    initDatabase();
+
     return true;
 }
 
@@ -46,6 +45,7 @@ void VmStarter::initDatabase()
                "cpumax "
                ")"
               );
+
     qDebug() << query.lastError();
 }
 
@@ -54,6 +54,7 @@ void VmStarter::populateDb(){
 
     // Currently there is only the SSH impl
     m_vmInstance = VirtualBoxSSHImpl::instance();
+
 
     m_vmInstance->setHostName("localhost");
     m_vmInstance->setLoginName("etienne");
