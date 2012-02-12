@@ -69,7 +69,7 @@ void VmStarter::populateDb(){
 
     QList<QByteArray> virtualMachineList = m_vmInstance->listVmUUIDs();
 
-    qDebug() << virtualMachineList;
+//    qDebug() << virtualMachineList;
 
     foreach(QByteArray vitualMachine, virtualMachineList){
         QHash<QByteArray, QByteArray> vitualMachineInfo = m_vmInstance->listVmInfo(vitualMachine);

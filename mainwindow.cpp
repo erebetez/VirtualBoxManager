@@ -70,7 +70,12 @@ void MainWindow::setUpUI()
 }
 
 void MainWindow::copyVm(){
-    VirtualBoxSSHImpl::instance()->copyVm(m_dockList->currentMachine());
+    QByteArray machine = m_dockList->currentMachine();
+
+    if( machine.isEmpty() ) {
+        return;
+    }
+    VirtualBoxSSHImpl::instance()->copyVm(machine, QByteArray("MyClone"));
 
 }
 

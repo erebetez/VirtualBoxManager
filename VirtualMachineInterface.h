@@ -23,9 +23,9 @@ public:
 
     virtual QHash<QByteArray, QByteArray>  listVmInfo( QByteArray id ) = 0;
 
-    virtual bool startVm( QByteArray id ) const = 0;
+    virtual bool startVm( const QByteArray id ) const = 0;
 
-    virtual bool copyVm( QByteArray id ) const = 0;
+    virtual bool copyVm( const QByteArray id, const QByteArray name ) const = 0;
 
 
     virtual void setLoginName(const QByteArray login) {

@@ -23,9 +23,9 @@ public:
 
     virtual QHash<QByteArray, QByteArray> listVmInfo( QByteArray id );
 
-    virtual bool startVm( QByteArray id ) const;
+    virtual bool startVm( const QByteArray id ) const;
 
-    virtual bool copyVm( QByteArray id ) const;
+    virtual bool copyVm( const QByteArray id, const QByteArray name ) const;
 
 private:
     VirtualBoxSSHImpl();

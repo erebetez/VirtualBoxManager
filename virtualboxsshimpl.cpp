@@ -117,7 +117,7 @@ QHash<QByteArray, QByteArray> VirtualBoxSSHImpl::listVmInfo( QByteArray id ) {
 
 
 
-bool VirtualBoxSSHImpl::startVm( QByteArray id ) const{
+bool VirtualBoxSSHImpl::startVm( const QByteArray id ) const{
     return false;
 }
 
@@ -142,7 +142,7 @@ QByteArray VirtualBoxSSHImpl::executeInSSHShell(QByteArray command) const {
 
     // now that we are on the host, execute the vmBoxManage
     command.prepend("VBoxManage ");
-//    qDebug() << command;
+    qDebug() << command;
     vBoxProcess.write(command);
     vBoxProcess.closeWriteChannel();
 
@@ -151,8 +151,8 @@ QByteArray VirtualBoxSSHImpl::executeInSSHShell(QByteArray command) const {
     return vBoxProcess.readAll();
 }
 
-bool VirtualBoxSSHImpl::copyVm( QByteArray id ) const{
-    QByteArray cloneVm = QByteArray("clonevm " + id);
+bool VirtualBoxSSHImpl::copyVm( const QByteArray id, const QByteArray name ) const{
+    QByteArray cloneVm = QByteArray("clonevm " + id + " --register --name " + name);
 
     QByteArray returnValue = executeInSSHShell(cloneVm);
 
