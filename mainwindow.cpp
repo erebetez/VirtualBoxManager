@@ -66,7 +66,7 @@ void MainWindow::setUpUI()
 
     addDockWidget( Qt::BottomDockWidgetArea, m_dockList, Qt::Vertical );
 
-    connect( m_dockList, SIGNAL(dbRefreshed()), m_starter, SLOT(update()));
+    connect( m_starter, SIGNAL(dbRefreshed()), m_dockList, SLOT(update()));
 }
 
 void MainWindow::copyVm(){
