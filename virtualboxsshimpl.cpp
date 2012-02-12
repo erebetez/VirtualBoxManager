@@ -16,6 +16,9 @@ VirtualBoxSSHImpl::VirtualBoxSSHImpl() :
     qDebug() << "Konstructor VirtualBoxImpl";
 }
 
+VirtualBoxSSHImpl::~VirtualBoxSSHImpl(){
+
+}
 
 QString VirtualBoxSSHImpl::name() const {
     return QString("VirtualBox");
@@ -108,17 +111,32 @@ QHash<QByteArray, QByteArray>  VirtualBoxSSHImpl::listVmInfo( QByteArray id ) {
 }
 
 
+// Harddisc
 
-bool VirtualBoxSSHImpl::startVm(int machine) const{
+
+
+
+
+bool VirtualBoxSSHImpl::startVm( QByteArray id ) const{
     return false;
 }
 
 
 QList<QByteArray> VirtualBoxSSHImpl::vBoxManageProcess( QStringList param ) const {
-    QProcess vBoxProcess;
 
     param.prepend(QString("VBoxManage"));
     QByteArray vBoxManageCommand = param.join(" ").toLatin1();
+
+
+    QByteArray returnValue = executeInSSHShell(vBoxManageCommand);
+
+
+    return returnValue.split('\n');
+}
+
+
+QByteArray VirtualBoxSSHImpl::executeInSSHShell(QByteArray command) const {
+    QProcess vBoxProcess;
 
     // Needs Keypair and the public key in .ssh/authorized_keys
     QStringList sshParamList = QStringList() << m_login + "@" + m_hostname;
@@ -128,11 +146,14 @@ QList<QByteArray> VirtualBoxSSHImpl::vBoxManageProcess( QStringList param ) cons
     vBoxProcess.waitForStarted();
 
     // now that we are on the host, execute the vmBoxManage
-    vBoxProcess.write(vBoxManageCommand);
+    vBoxProcess.write(command);
     vBoxProcess.closeWriteChannel();
 
     vBoxProcess.waitForFinished();
 
-    return vBoxProcess.readAll().split('\n');
+    return vBoxProcess.readAll();
+}
 
+bool VirtualBoxSSHImpl::copyVm( QByteArray id ) const{
+    return false;
 }

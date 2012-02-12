@@ -13,18 +13,20 @@ Q_OBJECT
 public:
     static VirtualMachineInterface *instance() { return 0; }
 
-    virtual ~VirtualMachineInterface(){}
+    virtual ~VirtualMachineInterface() {}
 
-    virtual QString name() const { return QString(); }
+    virtual QString name() const = 0;
 
-    virtual QString description() const { return QString();}
+    virtual QString description() const = 0;
 
+    virtual QList<QByteArray> listVmUUIDs() = 0;
 
-    virtual QList<QByteArray> listVmUUIDs() const { return QList<QByteArray> (); }
+    virtual QHash<QByteArray, QByteArray>  listVmInfo( QByteArray id ) = 0;
 
-    virtual QHash<QByteArray, QByteArray>  VlistVmInfo( QByteArray id ) { return QHash<QByteArray, QByteArray>  (); }
+    virtual bool startVm( QByteArray id  ) const = 0;
 
-    virtual bool startVm( int machine ) const { return false; }
+    virtual bool copyVm( QByteArray id  ) const = 0;
+
 
     virtual void setLoginName(const QByteArray login) {
         m_login = login;
@@ -36,7 +38,7 @@ public:
 
 //    virtual bool createVm( QStringList param ) const;
 
-//    virtual bool copyVm( int machine ) const;
+
 
 //    virtual bool deleteVm( int machine ) const;
 
@@ -50,9 +52,6 @@ protected:
 
       QByteArray m_hostname;
       QByteArray m_login;
-
-//    QString m_name;
-//    QString m_description;
 
 };
 

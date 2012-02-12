@@ -24,7 +24,8 @@ public slots:
 private:
     VirtualBoxSSHImpl *m_vmInstance;
 
-    void initDatabase();
+    void clearDatabase() const;
+    void initDatabase() const;
 
 };
 

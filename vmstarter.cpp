@@ -32,10 +32,14 @@ bool VmStarter::connectToDatabase(const QString &dataBaseFileName)
     return true;
 }
 
-void VmStarter::initDatabase()
-{
+void VmStarter::clearDatabase() const {
     QSqlQuery query;
+    query.exec("DROP TABLE virtualmachines");
 
+}
+
+void VmStarter::initDatabase() const {
+    QSqlQuery query;
     query.exec("create table IF NOT EXISTS virtualmachines (uuid PRIMARY KEY, "
                "name, "
                "host, "
@@ -46,11 +50,14 @@ void VmStarter::initDatabase()
                ")"
               );
 
-    qDebug() << query.lastError();
+//    qDebug() << query.lastError();
 }
 
 
 void VmStarter::populateDb(){
+    // reset the hole stuff
+    clearDatabase();
+    initDatabase();
 
     // Currently there is only the SSH impl
     m_vmInstance = VirtualBoxSSHImpl::instance();
@@ -59,17 +66,25 @@ void VmStarter::populateDb(){
     m_vmInstance->setHostName("localhost");
     m_vmInstance->setLoginName("etienne");
 
-
     QList<QByteArray> virtualMachineList = m_vmInstance->listVmUUIDs();
 
     qDebug() << virtualMachineList;
 
     foreach(QByteArray vitualMachine, virtualMachineList){
-        QHash<QByteArray, QByteArray> vitualMachineInfo = VirtualBoxSSHImpl::instance()->listVmInfo(vitualMachine);
+        QHash<QByteArray, QByteArray> vitualMachineInfo = m_vmInstance->listVmInfo(vitualMachine);
 
         qDebug() << vitualMachineInfo["name"];
 
         QSqlQuery query;
+
+//        query.exec("SELECT UUID FROM virtualmachines");
+//        qDebug() << query.first();
+//        qDebug() << query.value(0);
+
+//        "UPDATE table_name"
+//        "SET column1=value, column2=value2,..."
+//        "WHERE some_column=some_value"
+
         query.prepare("INSERT INTO virtualmachines (uuid, name, host, ostype, state, memory, cpumax) "
                       "VALUES (?, ?, ?, ?, ?, ?, ?)");
 
