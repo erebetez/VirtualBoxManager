@@ -34,13 +34,15 @@ class ListDialog : public QDockWidget
 public:
     explicit ListDialog(QWidget* parent = 0);
     virtual ~ListDialog();
+    QByteArray currentMachine() const;
 
 Q_SIGNALS:
-    void currentJob(int);
+    void currentMachine(QByteArray);
 
 public slots:
     void setQuickFilter(QString);
     void setCustomFilter(QString);
+    void newSelection(QItemSelection selected, QItemSelection deselected);
     void update();
 
 private slots:
@@ -53,6 +55,8 @@ private:
 
     QString currentCustomFilter;
     QString currentQuickFilter;
+
+    QByteArray m_currentMachine;
 
     QSqlTableModel *model;
     QStringList *columnHeaders;

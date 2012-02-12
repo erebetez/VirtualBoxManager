@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "virtualboxsshimpl.h"
+
 #include <QSettings>
 
 #include <QDebug>
@@ -47,6 +49,7 @@ MainWindow::~MainWindow()
     settings.endGroup();
 
     delete ui;
+    delete m_starter;
 }
 
 
@@ -55,6 +58,7 @@ void MainWindow::setUpUI()
     setDockNestingEnabled(true);
 
     ui->mainToolBar->addAction(tr("Populate"), m_starter, SLOT(populateDb()) );
+    ui->mainToolBar->addAction(tr("Copy"), this, SLOT(copyVm()) );
     ui->mainToolBar->addAction(tr("Settings"), this, SLOT(showSettings()) );
 
     m_dockList = new ListDialog( this );
@@ -62,10 +66,13 @@ void MainWindow::setUpUI()
 
     addDockWidget( Qt::BottomDockWidgetArea, m_dockList, Qt::Vertical );
 
-
-    connect( m_starter, SIGNAL(dbRefreshed()), m_dockList, SLOT(update()));
+    connect( m_dockList, SIGNAL(dbRefreshed()), m_starter, SLOT(update()));
 }
 
+void MainWindow::copyVm(){
+    VirtualBoxSSHImpl::instance()->copyVm(m_dockList->currentMachine());
+
+}
 
 void MainWindow::showSettings(){
 

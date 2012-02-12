@@ -21,7 +21,7 @@ public:
 
     virtual QList<QByteArray>  listVmUUIDs();
 
-    virtual QHash<QByteArray, QByteArray>   listVmInfo( QByteArray id );
+    virtual QHash<QByteArray, QByteArray> listVmInfo( QByteArray id );
 
     virtual bool startVm( QByteArray id ) const;
 
@@ -31,7 +31,7 @@ private:
     VirtualBoxSSHImpl();
 
 
-    QList<QByteArray> vBoxManageProcess( QStringList param ) const;
+    QList<QByteArray> vBoxManageProcess( QByteArray command ) const;
 
     QByteArray executeInSSHShell( QByteArray param ) const;
 

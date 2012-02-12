@@ -35,34 +35,13 @@ ListView::ListView(QSqlTableModel* model, QWidget* parent): QTreeView(parent)
 
     header()->setMovable(true);
 
-    QItemSelectionModel *selectionModel = new  QItemSelectionModel(model);
-    setSelectionModel(selectionModel);
 
-    connect(selectionModel, SIGNAL( selectionChanged(QItemSelection, QItemSelection) ),
-            this, SLOT(newSelection(QItemSelection , QItemSelection )) );
 }
 
 void ListView::resizeAllColumnsToContent()
 {
     for ( int i = 0; i < header()->count(); ++i )
         resizeColumnToContents(i);
-}
-
-
-void ListView::newSelection(QItemSelection selected, QItemSelection deselected)
-{
-    Q_UNUSED(deselected)
-    Q_UNUSED(selected)
-
-    qDebug() << "selection change";
-
-//    QModelIndexList modelDataList = selected.indexes();
-
-//    if ( !modelDataList.isEmpty() ) {
-//        int index = this->model->fieldIndex("uuid");
-//        qDebug() << modelDataList.at(index).data().toByteArray();
-//        // emit currentMachine();
-//    }
 }
 
 

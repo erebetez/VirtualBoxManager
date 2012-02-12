@@ -32,7 +32,7 @@ QString VirtualBoxSSHImpl::description() const {
 
 QList<QByteArray>  VirtualBoxSSHImpl::listVmUUIDs() {
 
-    QList<QByteArray> vmList = vBoxManageProcess( QStringList() << "list" << "vms" );
+    QList<QByteArray> vmList = vBoxManageProcess( "list vms" );
 
     QByteArray vmRow;
 
@@ -64,9 +64,9 @@ QByteArray VirtualBoxSSHImpl::removeSurroundingChar(QByteArray string, const cha
 
 ///
 // @return uuid, name, ostype, state, memory, cpumax
-QHash<QByteArray, QByteArray>  VirtualBoxSSHImpl::listVmInfo( QByteArray id ) {
+QHash<QByteArray, QByteArray> VirtualBoxSSHImpl::listVmInfo( QByteArray id ) {
 
-    QList<QByteArray> vmInfos = vBoxManageProcess( QStringList() << "showvminfo" << id << "--details" << "--machinereadable" );
+    QList<QByteArray> vmInfos = vBoxManageProcess( QByteArray("showvminfo " + id + " --details --machinereadable") );
 
     QHash<QByteArray, QByteArray> infoHash;
 
@@ -122,14 +122,9 @@ bool VirtualBoxSSHImpl::startVm( QByteArray id ) const{
 }
 
 
-QList<QByteArray> VirtualBoxSSHImpl::vBoxManageProcess( QStringList param ) const {
+QList<QByteArray> VirtualBoxSSHImpl::vBoxManageProcess( QByteArray command ) const {
 
-    param.prepend(QString("VBoxManage"));
-    QByteArray vBoxManageCommand = param.join(" ").toLatin1();
-
-
-    QByteArray returnValue = executeInSSHShell(vBoxManageCommand);
-
+    QByteArray returnValue = executeInSSHShell(command);
 
     return returnValue.split('\n');
 }
@@ -146,6 +141,8 @@ QByteArray VirtualBoxSSHImpl::executeInSSHShell(QByteArray command) const {
     vBoxProcess.waitForStarted();
 
     // now that we are on the host, execute the vmBoxManage
+    command.prepend("VBoxManage ");
+//    qDebug() << command;
     vBoxProcess.write(command);
     vBoxProcess.closeWriteChannel();
 
@@ -155,5 +152,11 @@ QByteArray VirtualBoxSSHImpl::executeInSSHShell(QByteArray command) const {
 }
 
 bool VirtualBoxSSHImpl::copyVm( QByteArray id ) const{
+    QByteArray cloneVm = QByteArray("clonevm " + id);
+
+    QByteArray returnValue = executeInSSHShell(cloneVm);
+
+    qDebug() << returnValue;
+
     return false;
 }

@@ -32,8 +32,7 @@ ListDialog::ListDialog(QWidget* parent): QDockWidget(parent)
     model = new QSqlTableModel(this);
 
     model->setTable("virtualmachines");
-    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model->removeColumns(0, 1); // Don't show primary key
+    model->setEditStrategy( QSqlTableModel::OnManualSubmit);
 
     setupColumnHeaders();
 
@@ -67,10 +66,18 @@ void ListDialog::setupGui() {
 
     view = new ListView(model, this);
     view->resizeAllColumnsToContent();
-//     view->header()->moveSection(1,4);
-//     view->setColumnHidden(1, true);
-    layout->addWidget(view, 2, 0, 1, 3);
+    view->setColumnHidden(0, true); // Don't show primary key uuid. Internal use only
 
+
+    QItemSelectionModel *selectionModel = new  QItemSelectionModel(model);
+
+    view->setSelectionModel(selectionModel);
+
+    connect(selectionModel, SIGNAL( selectionChanged(QItemSelection, QItemSelection) ),
+            this, SLOT(newSelection(QItemSelection , QItemSelection )) );
+
+
+    layout->addWidget(view, 2, 0, 1, 3);
 
     connect(configButton, SIGNAL(pressed()), this, SLOT(showHideCustomSearchWidget()));
 
@@ -78,6 +85,27 @@ void ListDialog::setupGui() {
     connect(customSearch, SIGNAL(newCustomWhereStatement(QString)), this, SLOT(setCustomFilter(QString)));
 }
 
+void ListDialog::newSelection(QItemSelection selected, QItemSelection deselected)
+{
+    Q_UNUSED(deselected)
+
+    qDebug() << "selection change";
+
+    QModelIndexList modelDataList = selected.indexes();
+
+    if ( !modelDataList.isEmpty() ) {
+        int index = this->model->fieldIndex("uuid");
+
+        m_currentMachine = modelDataList.at(index).data().toByteArray();
+
+        qDebug() << m_currentMachine;
+        emit currentMachine(m_currentMachine);
+    }
+}
+
+QByteArray ListDialog::currentMachine() const {
+    return m_currentMachine;
+}
 
 void ListDialog::setQuickFilter(QString sql)
 {

@@ -1,4 +1,5 @@
 #include "vmstarter.h"
+#include "virtualboxsshimpl.h"
 
 #include <QVBoxLayout>
 #include <QListWidget>
@@ -73,7 +74,7 @@ void VmStarter::populateDb(){
     foreach(QByteArray vitualMachine, virtualMachineList){
         QHash<QByteArray, QByteArray> vitualMachineInfo = m_vmInstance->listVmInfo(vitualMachine);
 
-        qDebug() << vitualMachineInfo["name"];
+        qDebug() << vitualMachineInfo.value("name");
 
         QSqlQuery query;
 
@@ -88,18 +89,19 @@ void VmStarter::populateDb(){
         query.prepare("INSERT INTO virtualmachines (uuid, name, host, ostype, state, memory, cpumax) "
                       "VALUES (?, ?, ?, ?, ?, ?, ?)");
 
-        query.bindValue(0, vitualMachineInfo["UUID"]);
-        query.bindValue(1, vitualMachineInfo["name"]);
+        query.bindValue(0, vitualMachineInfo.value("UUID"));
+        query.bindValue(1, vitualMachineInfo.value("name"));
         query.bindValue(2, "localhost");
-        query.bindValue(3, vitualMachineInfo["ostype"]);
-        query.bindValue(4, vitualMachineInfo["state"]);
-        query.bindValue(5, vitualMachineInfo["memory"]);
-        query.bindValue(6, vitualMachineInfo["cpumax"]);
+        query.bindValue(3, vitualMachineInfo.value("ostype"));
+        query.bindValue(4, vitualMachineInfo.value("state"));
+        query.bindValue(5, vitualMachineInfo.value("memory"));
+        query.bindValue(6, vitualMachineInfo.value("cpumax"));
         query.exec();
     }
 
     emit dbRefreshed();
 }
+
 
 
 VmStarter::~VmStarter(){

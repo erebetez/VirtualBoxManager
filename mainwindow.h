@@ -20,7 +20,7 @@ public:
 
 public slots:
     void showSettings();
-
+    void copyVm();
     
 private:
     Ui::MainWindow *ui;

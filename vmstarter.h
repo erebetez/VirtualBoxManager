@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "virtualboxsshimpl.h"
+#include "VirtualMachineInterface.h"
 
 class VmStarter: public QObject
 {
@@ -21,8 +21,9 @@ Q_SIGNALS:
 public slots:
     void populateDb();
 
+
 private:
-    VirtualBoxSSHImpl *m_vmInstance;
+    VirtualMachineInterface *m_vmInstance;
 
     void clearDatabase() const;
     void initDatabase() const;

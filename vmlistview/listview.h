@@ -32,12 +32,6 @@ public:
 
     void resizeAllColumnsToContent();
 
-Q_SIGNALS:
-    void currentMachine(QByteArray);
-
-private slots:
-    void newSelection(QItemSelection selected, QItemSelection deselected);
-
 private:
     QSqlTableModel *model;
 
