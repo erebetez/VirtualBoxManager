@@ -64,10 +64,10 @@ void ListDialog::setupGui() {
     layout->addWidget(customSearch, 1, 0, 1, 3);
     customSearch->hide();
 
-    view = new ListView(model, this);
-    view->resizeAllColumnsToContent();
+    view = new ListView(this);
+    view->setModel(model);
     view->setColumnHidden(0, true); // Don't show primary key uuid. Internal use only
-
+    view->resizeAllColumnsToContent();
 
     QItemSelectionModel *selectionModel = new  QItemSelectionModel(model);
 

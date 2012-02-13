@@ -57,6 +57,9 @@
           </spacer>
          </item>
          <item>
+          <widget class="QComboBox" name="comboBoxVmEngine"/>
+         </item>
+         <item>
           <widget class="QLineEdit" name="lineEditName">
            <property name="placeholderText">
             <string>Name</string>
@@ -93,8 +96,13 @@
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>Advanced</string>
+       <string>Vm Engine Plugins</string>
       </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QListWidget" name="listWidget"/>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

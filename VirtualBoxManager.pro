@@ -15,22 +15,22 @@ SOURCES += main.cpp\
     vmstarter.cpp \
     settingsdialog.cpp \
     virtualboxsshimpl.cpp \
-    vmlistview/listdialog.cpp \
-    vmlistview/sqlfilterlineedit.cpp \
-    vmlistview/listview.cpp \
-    vmlistview/listcustomsearch.cpp \
-    vmlistview/sqltools.cpp
+    listdialog.cpp \
+    sqlfilterlineedit.cpp \
+    listview.cpp \
+    listcustomsearch.cpp \
+    sqltools.cpp
 
 HEADERS  += mainwindow.h \
     vmstarter.h \
     VirtualMachineInterface.h \
     settingsdialog.h \
     virtualboxsshimpl.h \
-    vmlistview/sqlfilterlineedit.h \
-    vmlistview/listview.h \
-    vmlistview/listdialog.h \
-    vmlistview/listcustomsearch.h \
-    vmlistview/sqltools.h
+    sqlfilterlineedit.h \
+    listview.h \
+    listdialog.h \
+    listcustomsearch.h \
+    sqltools.h
 
 FORMS    += mainwindow.ui \
     settingsdialog.ui

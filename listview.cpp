@@ -17,26 +17,34 @@
 */
 
 
-#ifndef LISTVIEW_H
-#define LISTVIEW_H
+#include "listview.h"
 
-#include <QTreeView>
-#include <QItemSelectionModel>
-#include <QSqlTableModel>
+#include <QMouseEvent>
+#include <QHeaderView>
 
-class ListView : public QTreeView
+#include <QDebug>
+
+ListView::ListView(QWidget* parent): QTreeView(parent)
 {
-    Q_OBJECT
-public:
-    explicit ListView(QSqlTableModel* model, QWidget* parent = 0);
 
-    void resizeAllColumnsToContent();
+    setSortingEnabled(true);
+    setItemsExpandable(false);
+    setRootIsDecorated(false);
 
-private:
-    QSqlTableModel *model;
+    header()->setMovable(true);
 
-protected:
-    virtual void mousePressEvent( QMouseEvent * event );
-};
 
-#endif // LISTVIEW_H
+}
+
+void ListView::resizeAllColumnsToContent()
+{
+    for ( int i = 0; i < header()->count(); ++i )
+        resizeColumnToContents(i);
+}
+
+
+void ListView::mousePressEvent(QMouseEvent* event)
+{
+//     qDebug() << "mousePress" << event->pos();
+    QTreeView::mousePressEvent(event);
+}

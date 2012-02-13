@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include "settingsdialog.h"
 #include "vmstarter.h"
-#include "vmlistview/listdialog.h"
+#include "listdialog.h"
 
 namespace Ui {
 class MainWindow;
