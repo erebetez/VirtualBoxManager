@@ -27,7 +27,7 @@
 
 ListDialog::ListDialog(QWidget* parent): QDockWidget(parent)
 {
-    setWindowTitle(tr("List"));
+    setWindowTitle(tr("Virutal Machines"));
 
     model = new QSqlTableModel(this);
 

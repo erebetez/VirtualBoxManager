@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDir>
+
 #include "settingsdialog.h"
 #include "vmstarter.h"
 #include "listdialog.h"
@@ -20,14 +22,20 @@ public:
 
 public slots:
     void showSettings();
-    void copyVm();
-    
+    void copyVm();    
+    void loadPlugins();
+
 private:
     Ui::MainWindow *ui;
+
+
 
     void setUpUI();
 
     VmStarter *m_starter;
+
+    QDir pluginsDir;
+    QStringList m_pluginFileNames;
 
     ListDialog *m_dockList;
     SettingsDialog *m_settings;

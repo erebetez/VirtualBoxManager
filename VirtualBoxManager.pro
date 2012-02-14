@@ -14,7 +14,6 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     vmstarter.cpp \
     settingsdialog.cpp \
-    virtualboxsshimpl.cpp \
     listdialog.cpp \
     sqlfilterlineedit.cpp \
     listview.cpp \
@@ -25,7 +24,6 @@ HEADERS  += mainwindow.h \
     vmstarter.h \
     VirtualMachineInterface.h \
     settingsdialog.h \
-    virtualboxsshimpl.h \
     sqlfilterlineedit.h \
     listview.h \
     listdialog.h \
@@ -34,6 +32,9 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     settingsdialog.ui
+
+LIBS  = -L../VirtualBoxManager/plugins -lvirtualboxsshplugin
+
 
 OTHER_FILES += \
     README.txt

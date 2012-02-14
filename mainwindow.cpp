@@ -1,10 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "virtualboxsshimpl.h"
-
 #include <QSettings>
-
+#include <QPluginLoader>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -38,6 +36,48 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     setUpUI();
+
+    loadPlugins();
+
+}
+
+void MainWindow::loadPlugins()
+{
+
+    foreach (QObject *plugin, QPluginLoader::staticInstances()){
+        qDebug() << "static: " << plugin->metaObject()->className();
+
+        VirtualMachineInterface *iVBox = qobject_cast<VirtualMachineInterface *>(plugin);
+        qDebug() << "desc: " << iVBox->description();
+
+    }
+
+    // TODO: Make it also work for dynamic plugins
+//    pluginsDir = QDir(qApp->applicationDirPath());
+
+//#if defined(Q_OS_WIN)
+//    if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
+//        pluginsDir.cdUp();
+//#elif defined(Q_OS_MAC)
+//    if (pluginsDir.dirName() == "MacOS") {
+//        pluginsDir.cdUp();
+//        pluginsDir.cdUp();
+//        pluginsDir.cdUp();
+//    }
+//#endif
+//    pluginsDir.cd("plugins");
+
+//    qDebug() << pluginsDir;
+
+//    foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
+//        qDebug() << fileName;
+//        QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
+//        QObject *plugin = loader.instance();
+//        if (plugin) {
+//            qDebug() << "loaded: " << plugin->metaObject()->className();
+//            m_pluginFileNames += fileName;
+//        }
+//    }
 }
 
 MainWindow::~MainWindow()
@@ -75,7 +115,7 @@ void MainWindow::copyVm(){
     if( machine.isEmpty() ) {
         return;
     }
-    VirtualBoxSSHImpl::instance()->copyVm(machine, QByteArray("MyClone"));
+//    VirtualBoxSshPlugin::instance()->copyVm(machine, QByteArray("MyClone"));
 
 }
 

@@ -1,17 +1,16 @@
 #ifndef VIRTUALMACHINEINTERFACE_H
 #define VIRTUALMACHINEINTERFACE_H
 
+#include <QtPlugin>
 #include <QHash>
 #include <QStringList>
-#include <QObject>
 
 
-class VirtualMachineInterface : public QObject
+class VirtualMachineInterface
 {
-Q_OBJECT
+
 
 public:
-    static VirtualMachineInterface *instance() { return 0; }
 
     virtual ~VirtualMachineInterface() {}
 
@@ -48,12 +47,15 @@ public:
 
 
 protected:
-      VirtualMachineInterface(){}
+
 
       QByteArray m_hostname;
       QByteArray m_login;
 
 };
 
+
+Q_DECLARE_INTERFACE(VirtualMachineInterface,
+                    "com.erebetez.VirtualMachineManager.VirtualMachineInterface/1.0")
 
 #endif // VIRTUALMACHINEINTERFACE_H
