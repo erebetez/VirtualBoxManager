@@ -6,7 +6,7 @@
 
 QT       += core gui sql
 
-TARGET = VirtualBoxManager
+TARGET = VirtualMachineManager
 TEMPLATE = app
 
 
@@ -33,8 +33,18 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     settingsdialog.ui
 
-LIBS  = -L../VirtualBoxManager/plugins -lvirtualboxsshplugin
-
+LIBS  = -L../plugins -lvirtualboxsshplugin
 
 OTHER_FILES += \
     README.txt
+
+OBJECTS_DIR = ../../build/.obj
+MOC_DIR = ../../build/.moc
+RCC_DIR = ../../build/.rcc
+UI_DIR = ../../build/.ui
+
+CONFIG(debug, debug|release) {
+    DESTDIR = ../../debug
+} else {
+    DESTDIR = ../../release
+}
