@@ -14,23 +14,25 @@ MainWindow::MainWindow(QWidget *parent) :
     m_starter = new VmStarter(this);
 
 
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope , "VBoxManager", "VBoxManagerSettings");
+    m_settings = new QSettings(QSettings::IniFormat, QSettings::UserScope , "VBoxManager", "VBoxManagerSettings");
 
-    settings.beginGroup("MainWindow");
-    resize(settings.value("size", QSize(600, 400)).toSize());
+    m_settingsDialog = new SettingsDialog(m_settings, this);
+    m_settingsDialog->setModal(true);
+
+    m_settings->beginGroup("MainWindow");
+    resize(m_settings->value("size", QSize(600, 400)).toSize());
 
     // Needs to write a value and sync it in order to create the folder the first time the program is started.
     // Database will not open otherwiese.
-    settings.setValue("size", size());
+    m_settings->setValue("size", size());
 
-    settings.endGroup();
-    settings.sync();
+    m_settings->endGroup();
+    m_settings->sync();
 
-    QString settingsPath = settings.fileName();
+    QString settingsPath = m_settings->fileName();
     settingsPath = settingsPath.left(settingsPath.length() - QString("VBoxManagerSettings.ini").length() );
 
-
-    QString databaseFielName = settings.value("databaseFileName", QString("VBoxManagerDatabase.db")).toString();
+    QString databaseFielName = m_settings->value("databaseFileName", QString("VBoxManagerDatabase.db")).toString();
 
     m_starter->connectToDatabase(settingsPath + databaseFielName);
 
@@ -82,14 +84,14 @@ void MainWindow::loadPlugins()
 
 MainWindow::~MainWindow()
 {
+    m_settings->beginGroup("MainWindow");
+    m_settings->setValue("size", size());
+    m_settings->endGroup();
 
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope , "VBoxManager", "VBoxManagerSettings");
-    settings.beginGroup("MainWindow");
-    settings.setValue("size", size());
-    settings.endGroup();
-
+    delete m_settingsDialog;
     delete ui;
     delete m_starter;
+    delete m_settings;
 }
 
 
@@ -121,10 +123,7 @@ void MainWindow::copyVm(){
 
 void MainWindow::showSettings(){
 
-    if( m_settings == 0) {
-        qDebug() << "create Settings";
-        m_settings = new SettingsDialog(this);
-    }
-    m_settings->show();
+
+    m_settingsDialog->show();
 
 }

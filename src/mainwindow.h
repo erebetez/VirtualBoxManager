@@ -28,17 +28,17 @@ public slots:
 private:
     Ui::MainWindow *ui;
 
-
-
     void setUpUI();
 
     VmStarter *m_starter;
 
-    QDir pluginsDir;
-    QStringList m_pluginFileNames;
+    QSettings *m_settings;
+
+//    QDir pluginsDir;
+//    QStringList m_pluginFileNames;
 
     ListDialog *m_dockList;
-    SettingsDialog *m_settings;
+    SettingsDialog *m_settingsDialog;
 
 };
 

@@ -30,41 +30,14 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QPushButton" name="pushButtonNew">
-           <property name="text">
-            <string>New</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButtonDelete">
-           <property name="text">
-            <string>Delete</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBoxVmEngine"/>
-         </item>
-         <item>
           <widget class="QLineEdit" name="lineEditName">
            <property name="placeholderText">
             <string>Name</string>
            </property>
           </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxVmEngine"/>
          </item>
          <item>
           <widget class="QLineEdit" name="lineEditHost">
@@ -84,11 +57,51 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButtonApply">
+          <widget class="QPushButton" name="pushButtonSave">
            <property name="text">
-            <string>Apply</string>
+            <string>Save</string>
            </property>
           </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelInfo">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonDelete">
+           <property name="text">
+            <string>Delete Hypervisor</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>
@@ -100,7 +113,7 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QListWidget" name="listWidget"/>
+        <widget class="QListWidget" name="listWidgetVmPlugins"/>
        </item>
       </layout>
      </widget>

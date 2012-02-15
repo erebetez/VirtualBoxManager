@@ -1,0 +1,8 @@
+#/bin/bash
+
+# Create folders
+mkdir ../build
+mkdir ../debug
+mkdir ../release
+
+qmake VirtualMachineManager.pro
