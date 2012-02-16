@@ -122,13 +122,17 @@ QByteArray VirtualBoxSshPlugin::executeInSSHShell(QByteArray command) const {
     // Needs Keypair and the public key in .ssh/authorized_keys
     QStringList sshParamList = QStringList() << m_login + "@" + m_hostname;
 
+//    qDebug() << "logindata:" << m_login << m_hostname;
+
     vBoxProcess.start("ssh", sshParamList );
 
     vBoxProcess.waitForStarted();
 
     // now that we are on the host, execute the vmBoxManage
     command.prepend("VBoxManage ");
-    qDebug() << command;
+
+    qDebug() << "ssh Command: " << command;
+
     vBoxProcess.write(command);
     vBoxProcess.closeWriteChannel();
 

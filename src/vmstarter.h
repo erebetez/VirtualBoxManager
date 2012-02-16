@@ -2,8 +2,8 @@
 #define VMSTARTER_H
 
 #include <QObject>
+#include "hypervisor.h"
 
-#include "VirtualMachineInterface.h"
 
 class VmStarter: public QObject
 {
@@ -19,12 +19,10 @@ Q_SIGNALS:
     void dbRefreshed();
 
 public slots:
-    void populateDb();
+    void populateDb(QList<Hypervisor*> hypervisorList);
 
 
 private:
-    VirtualMachineInterface *m_vmInstance;
-
     void clearDatabase() const;
     void initDatabase() const;
 

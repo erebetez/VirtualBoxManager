@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "VirtualMachineInterface.h"
+
 #include <QSettings>
 #include <QPluginLoader>
 #include <QDebug>
@@ -11,13 +13,28 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_starter = new VmStarter(this);
 
+    loadSettings();
+
+
+    QString settingsPath = m_settings->fileName();
+    settingsPath = settingsPath.left(settingsPath.length() - QString("VBoxManagerSettings.ini").length() );
+
+    QString databaseFielName = m_settings->value("databaseFileName", QString("VBoxManagerDatabase.db")).toString();
+
+    m_starter = new VmStarter(this);
+    m_starter->connectToDatabase(settingsPath + databaseFielName);
+
+
+    setUpUI();
+
+    loadPlugins();
+
+}
+
+void MainWindow::loadSettings(){
 
     m_settings = new QSettings(QSettings::IniFormat, QSettings::UserScope , "VBoxManager", "VBoxManagerSettings");
-
-    m_settingsDialog = new SettingsDialog(m_settings, this);
-    m_settingsDialog->setModal(true);
 
     m_settings->beginGroup("MainWindow");
     resize(m_settings->value("size", QSize(600, 400)).toSize());
@@ -28,18 +45,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_settings->endGroup();
     m_settings->sync();
-
-    QString settingsPath = m_settings->fileName();
-    settingsPath = settingsPath.left(settingsPath.length() - QString("VBoxManagerSettings.ini").length() );
-
-    QString databaseFielName = m_settings->value("databaseFileName", QString("VBoxManagerDatabase.db")).toString();
-
-    m_starter->connectToDatabase(settingsPath + databaseFielName);
-
-
-    setUpUI();
-
-    loadPlugins();
 
 }
 
@@ -88,10 +93,11 @@ MainWindow::~MainWindow()
     m_settings->setValue("size", size());
     m_settings->endGroup();
 
-    delete m_settingsDialog;
+//    delete m_settingsDialog;
     delete ui;
     delete m_starter;
     delete m_settings;
+    qDeleteAll (m_hypervisorList) ;
 }
 
 
@@ -99,7 +105,7 @@ void MainWindow::setUpUI()
 {
     setDockNestingEnabled(true);
 
-    ui->mainToolBar->addAction(tr("Populate"), m_starter, SLOT(populateDb()) );
+    ui->mainToolBar->addAction(tr("Populate"), this, SLOT(populateDataBase()) );
     ui->mainToolBar->addAction(tr("Copy"), this, SLOT(copyVm()) );
     ui->mainToolBar->addAction(tr("Settings"), this, SLOT(showSettings()) );
 
@@ -109,6 +115,10 @@ void MainWindow::setUpUI()
     addDockWidget( Qt::BottomDockWidgetArea, m_dockList, Qt::Vertical );
 
     connect( m_starter, SIGNAL(dbRefreshed()), m_dockList, SLOT(update()));
+}
+
+void MainWindow::populateDataBase(){
+    m_starter->populateDb(m_hypervisorList);
 }
 
 void MainWindow::copyVm(){
@@ -123,6 +133,11 @@ void MainWindow::copyVm(){
 
 void MainWindow::showSettings(){
 
+    if(m_settingsDialog) {
+        m_settingsDialog = new SettingsDialog(this);
+        m_settingsDialog->setHypervisors(m_hypervisorList);
+    }
+    m_settingsDialog->setModal(true);
 
     m_settingsDialog->show();
 

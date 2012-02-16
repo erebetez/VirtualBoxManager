@@ -7,6 +7,7 @@
 #include "settingsdialog.h"
 #include "vmstarter.h"
 #include "listdialog.h"
+#include "hypervisor.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,11 +25,13 @@ public slots:
     void showSettings();
     void copyVm();    
     void loadPlugins();
+    void populateDataBase();
 
 private:
     Ui::MainWindow *ui;
 
     void setUpUI();
+    void loadSettings();
 
     VmStarter *m_starter;
 
@@ -39,6 +42,8 @@ private:
 
     ListDialog *m_dockList;
     SettingsDialog *m_settingsDialog;
+
+    QList<Hypervisor*> m_hypervisorList;
 
 };
 

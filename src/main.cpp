@@ -1,4 +1,5 @@
 #include <QtGui/QApplication>
+#include <QtPlugin>
 #include "mainwindow.h"
 
 Q_IMPORT_PLUGIN(virtualboxsshplugin)

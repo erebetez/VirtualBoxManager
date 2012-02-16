@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     sqlfilterlineedit.cpp \
     listview.cpp \
     listcustomsearch.cpp \
-    sqltools.cpp
+    sqltools.cpp \
+    hypervisor.cpp
 
 HEADERS  += mainwindow.h \
     vmstarter.h \
@@ -28,7 +29,8 @@ HEADERS  += mainwindow.h \
     listview.h \
     listdialog.h \
     listcustomsearch.h \
-    sqltools.h
+    sqltools.h \
+    hypervisor.h
 
 FORMS    += mainwindow.ui \
     settingsdialog.ui

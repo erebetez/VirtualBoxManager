@@ -1,5 +1,7 @@
 #include "vmstarter.h"
 
+#include "VirtualMachineInterface.h"
+
 #include <QVBoxLayout>
 #include <QListWidget>
 #include <QPushButton>
@@ -7,6 +9,7 @@
 #include <QHash>
 #include <QtSql>
 
+#include <QPluginLoader>
 
 #include <QDebug>
 
@@ -43,6 +46,7 @@ void VmStarter::initDatabase() const {
     query.exec("create table IF NOT EXISTS virtualmachines (uuid PRIMARY KEY, "
                "name, "
                "host, "
+               "hypervisor,"
                "ostype, "
                "state, "
                "memory, "
@@ -54,50 +58,56 @@ void VmStarter::initDatabase() const {
 }
 
 
-void VmStarter::populateDb(){
+void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
     // reset the hole stuff
     clearDatabase();
     initDatabase();
 
-//    // Currently there is only the SSH impl
-//    m_vmInstance = VirtualBoxSshPlugin::instance();
+    foreach(Hypervisor* hi, hypervisorList){
 
+        foreach (QObject *plugin, QPluginLoader::staticInstances()){
+            VirtualMachineInterface *iVMachine = qobject_cast<VirtualMachineInterface *>(plugin);
+            if(hi->typ() == iVMachine->name()){
+                iVMachine->setHostName(hi->adress());
+                iVMachine->setLoginName(hi->user());
 
-//    m_vmInstance->setHostName("localhost");
-//    m_vmInstance->setLoginName("etienne");
+                QList<QByteArray> virtualMachineList = iVMachine->listVmUUIDs();
 
-//    QList<QByteArray> virtualMachineList = m_vmInstance->listVmUUIDs();
+            //    qDebug() << virtualMachineList;
 
-////    qDebug() << virtualMachineList;
+                foreach(QByteArray vitualMachine, virtualMachineList){
+                    QHash<QByteArray, QByteArray> vitualMachineInfo = iVMachine->listVmInfo(vitualMachine);
 
-//    foreach(QByteArray vitualMachine, virtualMachineList){
-//        QHash<QByteArray, QByteArray> vitualMachineInfo = m_vmInstance->listVmInfo(vitualMachine);
+                    qDebug() << "Infos for VM:" << vitualMachineInfo.value("name");
 
-//        qDebug() << vitualMachineInfo.value("name");
+                    QSqlQuery query;
 
-//        QSqlQuery query;
+            //        query.exec("SELECT UUID FROM virtualmachines");
+            //        qDebug() << query.first();
+            //        qDebug() << query.value(0);
 
-////        query.exec("SELECT UUID FROM virtualmachines");
-////        qDebug() << query.first();
-////        qDebug() << query.value(0);
+            //        "UPDATE table_name"
+            //        "SET column1=value, column2=value2,..."
+            //        "WHERE some_column=some_value"
 
-////        "UPDATE table_name"
-////        "SET column1=value, column2=value2,..."
-////        "WHERE some_column=some_value"
+                    query.prepare("INSERT INTO virtualmachines (uuid, name, host, hypervisor, ostype, state, memory, cpumax) "
+                                  "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-//        query.prepare("INSERT INTO virtualmachines (uuid, name, host, ostype, state, memory, cpumax) "
-//                      "VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    query.bindValue(0, vitualMachineInfo.value("UUID"));
+                    query.bindValue(1, vitualMachineInfo.value("name"));
+                    query.bindValue(2, hi->adress());
+                    query.bindValue(3, iVMachine->description());
+                    query.bindValue(4, vitualMachineInfo.value("ostype"));
+                    query.bindValue(5, vitualMachineInfo.value("state"));
+                    query.bindValue(6, vitualMachineInfo.value("memory"));
+                    query.bindValue(7, vitualMachineInfo.value("cpumax"));
+                    query.exec();
+                    qDebug() << query.lastError();
+                }
 
-//        query.bindValue(0, vitualMachineInfo.value("UUID"));
-//        query.bindValue(1, vitualMachineInfo.value("name"));
-//        query.bindValue(2, "localhost");
-//        query.bindValue(3, vitualMachineInfo.value("ostype"));
-//        query.bindValue(4, vitualMachineInfo.value("state"));
-//        query.bindValue(5, vitualMachineInfo.value("memory"));
-//        query.bindValue(6, vitualMachineInfo.value("cpumax"));
-//        query.exec();
-//    }
-
+            }
+        }
+    }
     emit dbRefreshed();
 }
 
