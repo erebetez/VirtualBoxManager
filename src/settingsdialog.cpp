@@ -18,26 +18,27 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     ui->labelInfo->setText(QString());
 
-
     foreach (QObject *plugin, QPluginLoader::staticInstances()){
         VirtualMachineInterface *iVBox = qobject_cast<VirtualMachineInterface *>(plugin);
         ui->comboBoxVmEngine->addItem(iVBox->name()); //description()
      }
 
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(saveSettings()));
     connect(ui->pushButtonSave, SIGNAL(pressed()), this, SLOT(saveHypervisor()));
+    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(saveHypervisor()));
+    connect(ui->pushButtonDelete, SIGNAL(pressed()), this, SLOT(deleteHypervisor()));
+
     connect(ui->listHypervisorHosts, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)) ,
             this, SLOT(selectedHypervisor(QListWidgetItem*,QListWidgetItem*)));
 }
 
 
-void SettingsDialog::saveSettings(){
-
-
+void SettingsDialog::setHypervisors( QList<Hypervisor*> hypervisorList ){
+    m_hypervisorList = hypervisorList;
+    populateHypervisorList();
 }
 
-void SettingsDialog::setHypervisors( QList<Hypervisor*> &hypervisorList ){
-    m_hypervisorList = hypervisorList;
+QList<Hypervisor*> SettingsDialog::hypervisors() const{
+    return m_hypervisorList;
 }
 
 void SettingsDialog::populateHypervisorList(){
@@ -71,6 +72,18 @@ void SettingsDialog::saveHypervisor(){
     populateHypervisorList();
 }
 
+void SettingsDialog::deleteHypervisor(){
+
+    for(int i = 0; i < m_hypervisorList.count(); ++i){
+        if( m_hypervisorList.at(i)->name() == ui->lineEditName->text().toLatin1() ){
+            delete m_hypervisorList.at(i);
+            m_hypervisorList.removeAt(i) ;
+
+        }
+    }
+    populateHypervisorList();
+}
+
 void SettingsDialog::selectedHypervisor(QListWidgetItem* current, QListWidgetItem* previous){
 
     Q_UNUSED(previous)
@@ -80,8 +93,6 @@ void SettingsDialog::selectedHypervisor(QListWidgetItem* current, QListWidgetIte
     }
 
     foreach(Hypervisor *hy, m_hypervisorList){
-        qDebug() << hy->name();
-        qDebug() << current->text();
 
         if(hy->name() == current->text().toLatin1()){
            ui->lineEditHost->setText(hy->adress());

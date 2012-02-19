@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QDir>
 
-#include "settingsdialog.h"
+#include "settings.h"
 #include "vmstarter.h"
 #include "listdialog.h"
 #include "hypervisor.h"
@@ -22,7 +22,6 @@ public:
     ~MainWindow();
 
 public slots:
-    void showSettings();
     void copyVm();    
     void loadPlugins();
     void populateDataBase();
@@ -35,15 +34,14 @@ private:
 
     VmStarter *m_starter;
 
-    QSettings *m_settings;
+    Settings *m_settings;
 
 //    QDir pluginsDir;
 //    QStringList m_pluginFileNames;
 
     ListDialog *m_dockList;
-    SettingsDialog *m_settingsDialog;
 
-    QList<Hypervisor*> m_hypervisorList;
+//    QList<Hypervisor*> m_hypervisorList;
 
 };
 

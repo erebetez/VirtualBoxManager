@@ -1,19 +1,30 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <QObject>
+#include <QSettings>
+#include "settingsdialog.h"
 
-class Settings : public QObject
+class Settings : public QSettings
 {
     Q_OBJECT
 public:
     explicit Settings(QObject *parent = 0);
+    ~Settings();
 
-//    static void loadSettings();
+    QString databasePath();
+
+    QList<Hypervisor*>  hypervisors();
 
 signals:
 
 public slots:
+    void showDialog();
+    void save();
+
+private:
+    void saveHypervisors();
+
+    SettingsDialog *m_settingsDialog;
 
 };
 

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 #include "VirtualMachineInterface.h"
 
 #include <QSettings>
@@ -13,19 +14,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QCoreApplication::setOrganizationName("VMachineManager");
+    QCoreApplication::setApplicationName("VMachineManagerSettings");
+
+    m_settings = new Settings(this);
     loadSettings();
 
-    m_settingsDialog = new SettingsDialog(this);
-    m_settingsDialog->setModal(true);
-
-    QString settingsPath = m_settings->fileName();
-    settingsPath = settingsPath.left(settingsPath.length() - QString("VBoxManagerSettings.ini").length() );
-
-    QString databaseFielName = m_settings->value("databaseFileName", QString("VBoxManagerDatabase.db")).toString();
-
     m_starter = new VmStarter(this);
-    m_starter->connectToDatabase(settingsPath + databaseFielName);
-
+    m_starter->connectToDatabase(m_settings->databasePath());
 
     setUpUI();
 
@@ -39,26 +35,17 @@ MainWindow::~MainWindow()
     m_settings->setValue("size", size());
     m_settings->endGroup();
 
-    delete m_settingsDialog;
+    delete m_settings;
     delete ui;
     delete m_starter;
-    delete m_settings;
-    qDeleteAll( m_hypervisorList );
 }
 
 void MainWindow::loadSettings(){
 
-    m_settings = new QSettings(QSettings::IniFormat, QSettings::UserScope , "VBoxManager", "VBoxManagerSettings");
-
     m_settings->beginGroup("MainWindow");
     resize(m_settings->value("size", QSize(600, 400)).toSize());
-
-    // Needs to write a value and sync it in order to create the folder the first time the program is started.
-    // Database will not open otherwiese.
-    m_settings->setValue("size", size());
-
     m_settings->endGroup();
-    m_settings->sync();
+
 
 }
 
@@ -111,7 +98,7 @@ void MainWindow::setUpUI()
 
     ui->mainToolBar->addAction(tr("Populate"), this, SLOT(populateDataBase()) );
     ui->mainToolBar->addAction(tr("Copy"), this, SLOT(copyVm()) );
-    ui->mainToolBar->addAction(tr("Settings"), this, SLOT(showSettings()) );
+    ui->mainToolBar->addAction(tr("Settings"), m_settings, SLOT(showDialog()) );
 
     m_dockList = new ListDialog( this );
     m_dockList->setFeatures( QDockWidget::AllDockWidgetFeatures );
@@ -122,7 +109,7 @@ void MainWindow::setUpUI()
 }
 
 void MainWindow::populateDataBase(){
-    m_starter->populateDb(m_hypervisorList);
+    m_starter->populateDb(m_settings->hypervisors());
 }
 
 void MainWindow::copyVm(){
@@ -135,9 +122,3 @@ void MainWindow::copyVm(){
 
 }
 
-void MainWindow::showSettings(){
-
-    m_settingsDialog->setHypervisors(m_hypervisorList);
-    m_settingsDialog->show();
-
-}

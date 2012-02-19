@@ -58,7 +58,7 @@ void VmStarter::initDatabase() const {
 }
 
 
-void VmStarter::populateDb(QList<Hypervisor*> &hypervisorList){
+void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
     // reset the hole stuff
     clearDatabase();
     initDatabase();

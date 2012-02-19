@@ -19,11 +19,12 @@ public:
     explicit SettingsDialog(QWidget *parent = 0);
     ~SettingsDialog();
     
-    void setHypervisors(QList<Hypervisor*> &hypervisorList);
+    void setHypervisors(QList<Hypervisor*> hypervisorList);
+    QList<Hypervisor*> hypervisors() const;
 
 private slots:
-    void saveSettings();
     void saveHypervisor();
+    void deleteHypervisor();
     void selectedHypervisor(QListWidgetItem*,QListWidgetItem*);
 
 private:
