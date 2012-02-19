@@ -14,9 +14,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QCoreApplication::setOrganizationName("VMachineManager");
-    QCoreApplication::setApplicationName("VMachineManagerSettings");
-
     m_settings = new Settings(this);
     loadSettings();
 
@@ -26,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent) :
     setUpUI();
 
     loadPlugins();
-
 }
 
 MainWindow::~MainWindow()
@@ -46,9 +42,47 @@ void MainWindow::loadSettings(){
     resize(m_settings->value("size", QSize(600, 400)).toSize());
     m_settings->endGroup();
 
+}
+
+void MainWindow::setUpUI()
+{
+    setDockNestingEnabled(true);
+
+    ui->mainToolBar->addAction(tr("Refresh"), this, SLOT(populateDataBase()) );
+    ui->mainToolBar->addAction(tr("Start"), this, SLOT(startVm()) );
+    ui->mainToolBar->addAction(tr("Copy"), this, SLOT(copyVm()) );
+    ui->mainToolBar->addAction(tr("Settings"), m_settings, SLOT(showDialog()) );
+
+    m_dockList = new ListDialog( this );
+    m_dockList->setFeatures( QDockWidget::AllDockWidgetFeatures );
+
+    addDockWidget( Qt::BottomDockWidgetArea, m_dockList, Qt::Vertical );
+
+    connect( m_starter, SIGNAL(dbRefreshed()), m_dockList, SLOT(update()));
+}
+
+void MainWindow::populateDataBase(){
+    m_starter->populateDb(m_settings->hypervisors());
+}
+
+void MainWindow::copyVm(){
+    QByteArray machine = m_dockList->currentMachine();
+
+    if( machine.isEmpty() ) {
+        return;
+    }
+//    VirtualBoxSshPlugin::instance()->copyVm(machine, QByteArray("MyClone"));
 
 }
 
+void MainWindow::startVm(){
+    QByteArray machine = m_dockList->currentMachine();
+
+    if( machine.isEmpty() ) {
+        return;
+    }
+
+}
 
 void MainWindow::loadPlugins()
 {
@@ -88,37 +122,3 @@ void MainWindow::loadPlugins()
 //        }
 //    }
 }
-
-
-
-
-void MainWindow::setUpUI()
-{
-    setDockNestingEnabled(true);
-
-    ui->mainToolBar->addAction(tr("Populate"), this, SLOT(populateDataBase()) );
-    ui->mainToolBar->addAction(tr("Copy"), this, SLOT(copyVm()) );
-    ui->mainToolBar->addAction(tr("Settings"), m_settings, SLOT(showDialog()) );
-
-    m_dockList = new ListDialog( this );
-    m_dockList->setFeatures( QDockWidget::AllDockWidgetFeatures );
-
-    addDockWidget( Qt::BottomDockWidgetArea, m_dockList, Qt::Vertical );
-
-    connect( m_starter, SIGNAL(dbRefreshed()), m_dockList, SLOT(update()));
-}
-
-void MainWindow::populateDataBase(){
-    m_starter->populateDb(m_settings->hypervisors());
-}
-
-void MainWindow::copyVm(){
-    QByteArray machine = m_dockList->currentMachine();
-
-    if( machine.isEmpty() ) {
-        return;
-    }
-//    VirtualBoxSshPlugin::instance()->copyVm(machine, QByteArray("MyClone"));
-
-}
-

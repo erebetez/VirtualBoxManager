@@ -6,13 +6,17 @@
 #include <QDebug>
 
 
-QString VirtualBoxSshPlugin::name() const {
-    return QString("VirtualBox");
+QByteArray VirtualBoxSshPlugin::name() const {
+    return QByteArray("VirtualBox");
 }
 
 
 QString VirtualBoxSshPlugin::description() const {
     return QString("Virtualbox SSH Interface");
+}
+
+QString VirtualBoxSshPlugin::info() const{
+    return tr("Executes vboxmanager over an ssh connection.");
 }
 
 
@@ -50,11 +54,11 @@ QByteArray VirtualBoxSshPlugin::removeSurroundingChar(QByteArray string, const c
 
 ///
 // @return uuid, name, ostype, state, memory, cpumax
-QHash<QByteArray, QByteArray> VirtualBoxSshPlugin::listVmInfo( QByteArray id ) {
+QHash<QByteArray, QString> VirtualBoxSshPlugin::listVmInfo( QByteArray id ) {
 
     QList<QByteArray> vmInfos = vBoxManageProcess( QByteArray("showvminfo " + id + " --details --machinereadable") );
 
-    QHash<QByteArray, QByteArray> infoHash;
+    QHash<QByteArray, QString> infoHash;
 
     foreach(QByteArray vmInfo, vmInfos){
         QList<QByteArray> infoPair = vmInfo.split('=');
@@ -97,13 +101,14 @@ QHash<QByteArray, QByteArray> VirtualBoxSshPlugin::listVmInfo( QByteArray id ) {
 }
 
 
-// Harddisc
+// Harddisc TODO
 
 
 
 
 
 bool VirtualBoxSshPlugin::startVm( const QByteArray id ) const{
+    executeInSSHShell("startvm " + id);
     return false;
 }
 
@@ -131,7 +136,7 @@ QByteArray VirtualBoxSshPlugin::executeInSSHShell(QByteArray command) const {
     // now that we are on the host, execute the vmBoxManage
     command.prepend("VBoxManage ");
 
-    qDebug() << "ssh Command: " << command;
+    //qDebug() << "ssh Command: " << command;
 
     vBoxProcess.write(command);
     vBoxProcess.closeWriteChannel();
@@ -151,4 +156,4 @@ bool VirtualBoxSshPlugin::copyVm( const QByteArray id, const QByteArray name ) c
     return false;
 }
 
- Q_EXPORT_PLUGIN2(virtualboxsshplugin, VirtualBoxSshPlugin)
+Q_EXPORT_PLUGIN2(virtualboxsshplugin, VirtualBoxSshPlugin)

@@ -11,13 +11,15 @@ class VirtualBoxSshPlugin : public QObject, public VirtualMachineInterface
     Q_INTERFACES(VirtualMachineInterface)
 
 public:
-    QString name() const;
+    QByteArray name() const;
 
     QString description() const;
 
+    QString info() const;
+
     QList<QByteArray>  listVmUUIDs();
 
-    QHash<QByteArray, QByteArray> listVmInfo( QByteArray id );
+    QHash<QByteArray, QString> listVmInfo( QByteArray id );
 
     bool startVm( const QByteArray id ) const;
 

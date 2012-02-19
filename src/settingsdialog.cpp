@@ -15,7 +15,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     ui->setupUi(this);
 
-
     ui->labelInfo->setText(QString());
 
     foreach (QObject *plugin, QPluginLoader::staticInstances()){

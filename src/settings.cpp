@@ -5,17 +5,10 @@
 #include <QDebug>
 
 Settings::Settings(QObject *parent) :
-    QSettings(parent)
+    QSettings(QSettings::IniFormat,  QSettings::UserScope, "VMachineManager", "VMachineManagerSettings", parent)
 {
-
-  //  QSettings(QSettings::IniFormat, QSettings::UserScope , "VMachineManager", "VMachineManagerSettings");
-
-    setPath(  QSettings::IniFormat,  QSettings::UserScope, "VMachineManager" );
-
-
     m_settingsDialog = new SettingsDialog();
     m_settingsDialog->setModal(true);
-
 
     qDebug() << fileName();
 
@@ -34,10 +27,9 @@ QString Settings::databasePath(){
     sync();
 
     QString settingsPath = fileName();
-    settingsPath = settingsPath.left(settingsPath.length() - QString("VBoxManagerSettings.ini").length() );
+    settingsPath = settingsPath.left(settingsPath.length() - QString("VMachineManagerSettings.ini").length() );
 
-    QString databaseFielName = value("databaseFileName", QString("VBoxManagerDatabase.db")).toString();
-    return settingsPath + databaseFielName;
+    return settingsPath + "VMachineManagerSettings.db";
 }
 
 void Settings::save(){

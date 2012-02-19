@@ -23,6 +23,7 @@ public:
 
 public slots:
     void copyVm();    
+    void startVm();
     void loadPlugins();
     void populateDataBase();
 

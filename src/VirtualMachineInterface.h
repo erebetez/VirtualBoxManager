@@ -9,18 +9,19 @@
 class VirtualMachineInterface
 {
 
-
 public:
 
     virtual ~VirtualMachineInterface() {}
 
-    virtual QString name() const = 0;
+    virtual QByteArray name() const = 0;
 
     virtual QString description() const = 0;
 
+    virtual QString info() const = 0;
+
     virtual QList<QByteArray> listVmUUIDs() = 0;
 
-    virtual QHash<QByteArray, QByteArray>  listVmInfo( QByteArray id ) = 0;
+    virtual QHash<QByteArray, QString>  listVmInfo( QByteArray id ) = 0;
 
     virtual bool startVm( const QByteArray id ) const = 0;
 
@@ -47,15 +48,12 @@ public:
 
 
 protected:
-
-
       QByteArray m_hostname;
       QByteArray m_login;
-
 };
 
 
 Q_DECLARE_INTERFACE(VirtualMachineInterface,
-                    "com.erebetez.VirtualMachineManager.VirtualMachineInterface/1.0")
+                    "com.erebetez.VirtualMachineManager.VirtualMachineInterface/0.1")
 
 #endif // VIRTUALMACHINEINTERFACE_H

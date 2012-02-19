@@ -59,8 +59,7 @@ void VmStarter::initDatabase() const {
 
 
 void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
-    // reset the hole stuff
-    clearDatabase();
+
     initDatabase();
 
     foreach(Hypervisor* hy, hypervisorList){
@@ -75,36 +74,50 @@ void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
 
                 QList<QByteArray> virtualMachineList = iVMachine->listVmUUIDs();
 
-            //    qDebug() << virtualMachineList;
-
                 foreach(QByteArray vitualMachine, virtualMachineList){
-                    QHash<QByteArray, QByteArray> vitualMachineInfo = iVMachine->listVmInfo(vitualMachine);
+                    QHash<QByteArray, QString> vitualMachineInfo = iVMachine->listVmInfo(vitualMachine);
 
                     qDebug() << "Infos for VM:" << vitualMachineInfo.value("name");
 
                     QSqlQuery query;
 
-            //        query.exec("SELECT UUID FROM virtualmachines");
-            //        qDebug() << query.first();
-            //        qDebug() << query.value(0);
-
-            //        "UPDATE table_name"
-            //        "SET column1=value, column2=value2,..."
-            //        "WHERE some_column=some_value"
-
                     query.prepare("INSERT INTO virtualmachines (uuid, name, host, hypervisor, ostype, state, memory, cpumax) "
                                   "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-                    query.bindValue(0, vitualMachineInfo.value("UUID"));
-                    query.bindValue(1, vitualMachineInfo.value("name"));
-                    query.bindValue(2, hy->adress());
-                    query.bindValue(3, iVMachine->description());
-                    query.bindValue(4, vitualMachineInfo.value("ostype"));
-                    query.bindValue(5, vitualMachineInfo.value("state"));
-                    query.bindValue(6, vitualMachineInfo.value("memory"));
-                    query.bindValue(7, vitualMachineInfo.value("cpumax"));
+                    query.addBindValue( vitualMachineInfo.value("UUID") );
+                    query.addBindValue( vitualMachineInfo.value("name") );
+                    query.addBindValue( hy->adress() );
+                    query.addBindValue( iVMachine->name() );
+                    query.addBindValue( vitualMachineInfo.value("ostype") );
+                    query.addBindValue( vitualMachineInfo.value("state") );
+                    query.addBindValue( vitualMachineInfo.value("memory") );
+                    query.addBindValue( vitualMachineInfo.value("cpumax") );
                     query.exec();
-                    qDebug() << query.lastError();
+
+//                    qDebug() << query.executedQuery();
+                    qDebug() << "Insert" << query.lastError();
+
+                    // Machine already exixts
+                    if(query.lastError().number() == 19){
+
+                        QSqlQuery query2;
+
+                        query2.prepare("UPDATE virtualmachines "
+                                       "SET name = ?, host = ?, hypervisor = ?, ostype = ?, state = ?, memory = ?, cpumax = ? "
+                                       "WHERE uuid = '" + vitualMachineInfo.value("UUID") + "'");
+
+                        query2.addBindValue( vitualMachineInfo.value("name"));
+                        query2.addBindValue( hy->adress() );
+                        query2.addBindValue( iVMachine->name() );
+                        query2.addBindValue( vitualMachineInfo.value("ostype") );
+                        query2.addBindValue( vitualMachineInfo.value("state") );
+                        query2.addBindValue( vitualMachineInfo.value("memory") );
+                        query2.addBindValue( vitualMachineInfo.value("cpumax") );
+                        query2.exec();
+
+//                        qDebug() << query2.executedQuery();
+                        qDebug() << "Update" << query2.lastError();
+                    }
                 }
 
             }
