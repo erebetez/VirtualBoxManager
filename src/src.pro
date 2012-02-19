@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     listview.cpp \
     listcustomsearch.cpp \
     sqltools.cpp \
-    hypervisor.cpp
+    hypervisor.cpp \
+    settings.cpp
 
 HEADERS  += mainwindow.h \
     vmstarter.h \
@@ -30,7 +31,8 @@ HEADERS  += mainwindow.h \
     listdialog.h \
     listcustomsearch.h \
     sqltools.h \
-    hypervisor.h
+    hypervisor.h \
+    settings.h
 
 FORMS    += mainwindow.ui \
     settingsdialog.ui

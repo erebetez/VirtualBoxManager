@@ -13,9 +13,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-
     loadSettings();
 
+    m_settingsDialog = new SettingsDialog(this);
+    m_settingsDialog->setModal(true);
 
     QString settingsPath = m_settings->fileName();
     settingsPath = settingsPath.left(settingsPath.length() - QString("VBoxManagerSettings.ini").length() );
@@ -30,6 +31,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
     loadPlugins();
 
+}
+
+MainWindow::~MainWindow()
+{
+    m_settings->beginGroup("MainWindow");
+    m_settings->setValue("size", size());
+    m_settings->endGroup();
+
+    delete m_settingsDialog;
+    delete ui;
+    delete m_starter;
+    delete m_settings;
+    qDeleteAll( m_hypervisorList );
 }
 
 void MainWindow::loadSettings(){
@@ -47,6 +61,7 @@ void MainWindow::loadSettings(){
     m_settings->sync();
 
 }
+
 
 void MainWindow::loadPlugins()
 {
@@ -87,18 +102,7 @@ void MainWindow::loadPlugins()
 //    }
 }
 
-MainWindow::~MainWindow()
-{
-    m_settings->beginGroup("MainWindow");
-    m_settings->setValue("size", size());
-    m_settings->endGroup();
 
-//    delete m_settingsDialog;
-    delete ui;
-    delete m_starter;
-    delete m_settings;
-    qDeleteAll (m_hypervisorList) ;
-}
 
 
 void MainWindow::setUpUI()
@@ -133,12 +137,7 @@ void MainWindow::copyVm(){
 
 void MainWindow::showSettings(){
 
-    if(m_settingsDialog) {
-        m_settingsDialog = new SettingsDialog(this);
-        m_settingsDialog->setHypervisors(m_hypervisorList);
-    }
-    m_settingsDialog->setModal(true);
-
+    m_settingsDialog->setHypervisors(m_hypervisorList);
     m_settingsDialog->show();
 
 }

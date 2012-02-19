@@ -43,29 +43,30 @@ void SettingsDialog::setHypervisors( QList<Hypervisor*> &hypervisorList ){
 void SettingsDialog::populateHypervisorList(){
     ui->listHypervisorHosts->clear();
 
-    foreach(Hypervisor *hi, m_hypervisorList){
-        ui->listHypervisorHosts->addItem( hi->name() );
+    foreach(Hypervisor *hy, m_hypervisorList){
+        ui->listHypervisorHosts->addItem( hy->name() );
     }
 }
 
 void SettingsDialog::saveHypervisor(){
 
-    foreach(Hypervisor *hi, m_hypervisorList){
-        if(hi->name() == ui->lineEditName){
-           hi->setAdress(ui->lineEditHost->text().toLatin1());
-           hi->setTyp(ui->comboBoxVmEngine->currentText().toLatin1());
-           hi->setUser(ui->lineEditUser->text().toLatin1());
+    // Check if the name already exixts
+    foreach(Hypervisor *hy, m_hypervisorList){
+        if(hy->name() == ui->lineEditName->text().toLatin1()){
+           hy->setAdress(ui->lineEditHost->text().toLatin1());
+           hy->setTyp(ui->comboBoxVmEngine->currentText().toLatin1());
+           hy->setUser(ui->lineEditUser->text().toLatin1());
            return;
         }
     }
 
     // new one
-    Hypervisor *newHi = new Hypervisor();
-    newHi->setName(ui->lineEditName->text().toLatin1());
-    newHi->setAdress(ui->lineEditHost->text().toLatin1());
-    newHi->setTyp(ui->comboBoxVmEngine->currentText().toLatin1());
-    newHi->setUser(ui->lineEditUser->text().toLatin1());
-    m_hypervisorList.append(newHi);
+    Hypervisor *newHy = new Hypervisor();
+    newHy->setName(ui->lineEditName->text().toLatin1());
+    newHy->setAdress(ui->lineEditHost->text().toLatin1());
+    newHy->setTyp(ui->comboBoxVmEngine->currentText().toLatin1());
+    newHy->setUser(ui->lineEditUser->text().toLatin1());
+    m_hypervisorList.append(newHy);
 
     populateHypervisorList();
 }
@@ -74,15 +75,26 @@ void SettingsDialog::selectedHypervisor(QListWidgetItem* current, QListWidgetIte
 
     Q_UNUSED(previous)
 
-    foreach(Hypervisor *hi, m_hypervisorList){
-        if(hi->name() == current->text()){
-           ui->lineEditHost->setText(hi->adress());
-           ui->lineEditName->setText(hi->name());
-           ui->lineEditUser->setText(hi->user());
-           ui->comboBoxVmEngine->addItem(hi->typ());
-        }
+    if( current == 0) {
+        return;
     }
 
+    foreach(Hypervisor *hy, m_hypervisorList){
+        qDebug() << hy->name();
+        qDebug() << current->text();
+
+        if(hy->name() == current->text().toLatin1()){
+           ui->lineEditHost->setText(hy->adress());
+           ui->lineEditName->setText(hy->name());
+           ui->lineEditUser->setText(hy->user());
+           for ( int i = 0; i < ui->comboBoxVmEngine->count(); ++i) {
+              if( ui->comboBoxVmEngine->itemText(i).toLatin1() == hy->typ() ){
+                  ui->comboBoxVmEngine->setCurrentIndex(i);
+              }
+           }
+
+        }
+    }
 }
 
 

@@ -19,7 +19,7 @@ Q_SIGNALS:
     void dbRefreshed();
 
 public slots:
-    void populateDb(QList<Hypervisor*> hypervisorList);
+    void populateDb(QList<Hypervisor*> &hypervisorList);
 
 
 private:

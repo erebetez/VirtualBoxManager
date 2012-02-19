@@ -58,18 +58,20 @@ void VmStarter::initDatabase() const {
 }
 
 
-void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
+void VmStarter::populateDb(QList<Hypervisor*> &hypervisorList){
     // reset the hole stuff
     clearDatabase();
     initDatabase();
 
-    foreach(Hypervisor* hi, hypervisorList){
+    foreach(Hypervisor* hy, hypervisorList){
+        qDebug() << "checkingout: " << hy->name();
 
         foreach (QObject *plugin, QPluginLoader::staticInstances()){
             VirtualMachineInterface *iVMachine = qobject_cast<VirtualMachineInterface *>(plugin);
-            if(hi->typ() == iVMachine->name()){
-                iVMachine->setHostName(hi->adress());
-                iVMachine->setLoginName(hi->user());
+
+            if(hy->typ() == iVMachine->name()){
+                iVMachine->setHostName(hy->adress());
+                iVMachine->setLoginName(hy->user());
 
                 QList<QByteArray> virtualMachineList = iVMachine->listVmUUIDs();
 
@@ -95,7 +97,7 @@ void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
 
                     query.bindValue(0, vitualMachineInfo.value("UUID"));
                     query.bindValue(1, vitualMachineInfo.value("name"));
-                    query.bindValue(2, hi->adress());
+                    query.bindValue(2, hy->adress());
                     query.bindValue(3, iVMachine->description());
                     query.bindValue(4, vitualMachineInfo.value("ostype"));
                     query.bindValue(5, vitualMachineInfo.value("state"));
