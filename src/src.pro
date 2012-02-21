@@ -37,7 +37,7 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     settingsdialog.ui
 
-LIBS  = -L../plugins -lvirtualboxsshplugin
+LIBS  = -L../plugins -lvirtualboxsshplugin -lhypervisordummyplugin
 
 OTHER_FILES += \
     README.txt

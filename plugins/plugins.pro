@@ -1,2 +1,2 @@
 TEMPLATE      = subdirs
-SUBDIRS       = VirtualBoxSshPlugin 
+SUBDIRS       = VirtualBoxSshPlugin DummyHypervisorPlugin

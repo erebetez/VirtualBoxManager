@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 
 Q_IMPORT_PLUGIN(virtualboxsshplugin)
+Q_IMPORT_PLUGIN(hypervisordummyplugin)
 
 int main(int argc, char *argv[])
 {

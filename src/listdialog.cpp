@@ -94,8 +94,12 @@ void ListDialog::newSelection(QItemSelection selected, QItemSelection deselected
     QModelIndexList modelDataList = selected.indexes();
 
     if ( !modelDataList.isEmpty() ) {
-        int index = this->model->fieldIndex("uuid");
+        int index = this->model->fieldIndex("vmuuid");
 
+
+        if( index < 0 ) {
+            return;
+        }
         m_currentMachine = modelDataList.at(index).data().toByteArray();
 
         qDebug() << m_currentMachine;
