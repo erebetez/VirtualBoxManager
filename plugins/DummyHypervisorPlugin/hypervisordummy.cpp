@@ -1,8 +1,7 @@
 #include "hypervisordummy.h"
 
 #include <QDebug>
-//#include <QMessageBox>
-
+#include <QUuid>
 
 QByteArray HypervisorDummy::name() const {
     return QByteArray("Dummy");
@@ -19,7 +18,13 @@ QString HypervisorDummy::info() const{
 
 
 QList<QByteArray>  HypervisorDummy::listVmUUIDs() {
-    return QList<QByteArray>() << "20110121machine1" << "20110121machine3" << "20110121machine2";
+
+    if( m_vmList.isEmpty() ){
+        for(int i = 0; i < 4; ++i){
+            m_vmList.append(QUuid::createUuid().toByteArray());
+        }
+    }
+    return m_vmList;
 }
 
 
@@ -29,17 +34,17 @@ QHash<QByteArray, QString> HypervisorDummy::listVmInfo( QByteArray id ) {
 
     QHash<QByteArray, QString> infoHash;
 
-    infoHash["UUID"] = "UUID " + id ;
+    infoHash["UUID"] = id ;
 
     infoHash["name"] = "name " + id ;
 
-    infoHash["ostype"] = "ostype " + id ;
+    infoHash["ostype"] = "haiku" ;
 
-    infoHash["state"] = "state " + id ;
+    infoHash["state"] = "running";
 
-    infoHash["memory"] = "memory " + id ;
+    infoHash["memory"] = "200";
 
-    infoHash["cpumax"] = "cpumax " + id ;
+    infoHash["cpumax"] = "100" ;
 
     return infoHash;
 }

@@ -80,7 +80,7 @@ void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
 
     QSqlQuery query;
 
-    query.exec("UPDATE virtualmachines SET deleted = T");
+    query.exec("UPDATE virtualmachines SET deleted = 'T'");
 
     foreach(Hypervisor* hy, hypervisorList){
         qDebug() << "checkingout: " << hy->name();

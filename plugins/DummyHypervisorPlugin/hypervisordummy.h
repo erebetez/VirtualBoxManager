@@ -26,7 +26,7 @@ public:
     bool copyVm( const QByteArray id, const QByteArray name ) const;
 
 private:
-
+    QList<QByteArray> m_vmList;
 };
 
 #endif // HYPERVISORDUMMY_H
