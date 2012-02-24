@@ -38,7 +38,6 @@ bool VmStarter::connectToDatabase(const QString &dataBaseFileName)
 void VmStarter::clearDatabase() const {
     QSqlQuery query;
     query.exec("DROP TABLE virtualmachines");
-
 }
 
 void VmStarter::initDatabase() const {
@@ -55,10 +54,8 @@ void VmStarter::initDatabase() const {
                ")"
               );
 
-
     query.exec("create table IF NOT EXISTS harddiscs (hduuid PRIMARY KEY, "
                "vmuuid, "
-               "location, "
                "location, "
                "maxsize, "
                "currentsize, "
@@ -66,13 +63,12 @@ void VmStarter::initDatabase() const {
                ")"
               );
 
-
     query.exec("create table IF NOT EXISTS hdused (vmuuid, "
                "hduuid "
                ")"
               );
 
-    qDebug() << query.lastError();
+//    qDebug() << query.lastError();
 }
 
 
@@ -146,6 +142,15 @@ void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
 }
 
 
+QByteArray VmStarter::getHypervisorForMachineId(const QByteArray id) {
+   QSqlQuery query;
+   // TODO I actually need the hypervisor name, given in the settings.
+   query.prepare("SELECT hypervisor FROM virtualmachines WHERE vmuuid like ?");
+   query.addBindValue(id);
+   query.exec();
+   query.first();
+   return query.record().value(0).toByteArray();
+}
 
 VmStarter::~VmStarter(){
 }

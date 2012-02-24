@@ -72,7 +72,7 @@ void MainWindow::copyVm(){
         return;
     }
 //    VirtualBoxSshPlugin::instance()->copyVm(machine, QByteArray("MyClone"));
-
+    qDebug() << m_starter->getHypervisorForMachineId(machine);
 }
 
 void MainWindow::startVm(){
@@ -82,6 +82,7 @@ void MainWindow::startVm(){
         return;
     }
 
+    qDebug() << m_starter->getHypervisorForMachineId(machine);
 }
 
 void MainWindow::loadPlugins()

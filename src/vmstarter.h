@@ -15,6 +15,8 @@ public:
 
     bool connectToDatabase(const QString &dataBaseFileName);
 
+    QByteArray getHypervisorForMachineId(const QByteArray id);
+
 Q_SIGNALS:
     void dbRefreshed();
 
