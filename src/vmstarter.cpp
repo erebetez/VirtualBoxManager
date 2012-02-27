@@ -45,7 +45,6 @@ void VmStarter::initDatabase() const {
     query.exec("create table IF NOT EXISTS virtualmachines (vmuuid PRIMARY KEY, "
                "name, "
                "hypervisor, "
-               "host, "
                "ostype, "
                "state, "
                "memorymax, "
@@ -65,6 +64,13 @@ void VmStarter::initDatabase() const {
 
     query.exec("create table IF NOT EXISTS hdused (vmuuid, "
                "hduuid "
+               ")"
+              );
+
+    query.exec("create table IF NOT EXISTS hypervisors (hypervisor PRIMARY KEY, "
+               "host, "
+               "typ, "
+               "user  "
                ")"
               );
 
@@ -96,13 +102,12 @@ void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
                     qDebug() << "Infos for VM:" << vitualMachineInfo.value("name");
 
 
-                    query.prepare("INSERT INTO virtualmachines (vmuuid, name, host, hypervisor, ostype, state, memorymax, cpumax, deleted) "
-                                  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    query.prepare("INSERT INTO virtualmachines (vmuuid, name, hypervisor, ostype, state, memorymax, cpumax, deleted) "
+                                  "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
                     query.addBindValue( vitualMachineInfo.value("UUID") );
                     query.addBindValue( vitualMachineInfo.value("name") );
-                    query.addBindValue( hy->adress() );
-                    query.addBindValue( iVMachine->name() );
+                    query.addBindValue( hy->name() );
                     query.addBindValue( vitualMachineInfo.value("ostype") );
                     query.addBindValue( vitualMachineInfo.value("state") );
                     query.addBindValue( vitualMachineInfo.value("memory") );
@@ -117,12 +122,11 @@ void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
                     if(query.lastError().number() == 19){
 
                         query.prepare("UPDATE virtualmachines "
-                                       "SET name = ?, host = ?, hypervisor = ?, ostype = ?, state = ?, memorymax = ?, cpumax = ? , deleted = ?"
+                                       "SET name = ?, hypervisor = ?, ostype = ?, state = ?, memorymax = ?, cpumax = ? , deleted = ?"
                                        "WHERE vmuuid = '" + vitualMachineInfo.value("UUID") + "'");
 
                         query.addBindValue( vitualMachineInfo.value("name"));
-                        query.addBindValue( hy->adress() );
-                        query.addBindValue( iVMachine->name() );
+                        query.addBindValue( hy->name() );
                         query.addBindValue( vitualMachineInfo.value("ostype") );
                         query.addBindValue( vitualMachineInfo.value("state") );
                         query.addBindValue( vitualMachineInfo.value("memory") );

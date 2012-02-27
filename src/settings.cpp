@@ -3,6 +3,8 @@
 #include "hypervisor.h"
 
 #include <QDebug>
+#include <QSqlQuery>
+#include <QSqlError>
 
 Settings::Settings(QObject *parent) :
     QSettings(QSettings::IniFormat,  QSettings::UserScope, "VMachineManager", "VMachineManagerSettings", parent)
@@ -40,21 +42,19 @@ void Settings::save(){
 
 void Settings::saveHypervisors(){
 
-    remove("Hypervisors");
-
-    beginGroup("Hypervisors");
+    QSqlQuery query;
+    query.exec("DELETE FROM hypervisors");
+    query.prepare("INSERT INTO hypervisors (hypervisor, host, typ, user) "
+                  "VALUES (?, ?, ?, ?)");
 
     foreach(Hypervisor *hy, m_settingsDialog->hypervisors()){
-        beginGroup(hy->name());
-
-        setValue( "typ", hy->typ() );
-        setValue( "adress", hy->adress());
-        setValue( "user", hy->user());
-
-        endGroup();
+        query.addBindValue( hy->name() );
+        query.addBindValue( hy->adress() );
+        query.addBindValue( hy->typ() );
+        query.addBindValue( hy->user() );
+        query.exec();
     }
 
-    endGroup();
 }
 
 
@@ -63,38 +63,18 @@ QList<Hypervisor*> Settings::hypervisors(){
 
     QList<Hypervisor*> hypervisorList;
 
-    QString currentName;
-    QString property;
+    QSqlQuery query("SELECT hypervisor, host, typ, user FROM hypervisors");
 
-    beginGroup("Hypervisors");
+    while ( query.next() ) {
 
-    foreach(QString key, allKeys()){
+        Hypervisor *hy = new Hypervisor();
+        hypervisorList.append(hy);
 
-        if( key.split("/").first() != currentName ){
-           currentName = key.split("/").first();
-
-           Hypervisor *hy = new Hypervisor();
-           hypervisorList.append(hy);
-
-           hy->setName(currentName.toLatin1());
-
-        }
-
-        property = key.split("/").last();
-
-        if(property == "typ"){
-            hypervisorList.last()->setTyp(value(key, "").toString().toLatin1());
-        }
-        if(property == "adress"){
-            hypervisorList.last()->setAdress(value(key, "").toString().toLatin1());
-        }
-        if(property == "user"){
-            hypervisorList.last()->setUser(value(key, "").toString().toLatin1());
-        }
-
+        hypervisorList.last()->setName(query.value(0).toString().toLatin1());
+        hypervisorList.last()->setAdress(query.value(1).toString().toLatin1());
+        hypervisorList.last()->setTyp(query.value(2).toString().toLatin1());
+        hypervisorList.last()->setUser(query.value(3).toString().toLatin1());
     }
-
-    endGroup();
 
     return hypervisorList;
 }
