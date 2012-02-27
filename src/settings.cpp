@@ -7,23 +7,23 @@
 Settings::Settings(QObject *parent) :
     QSettings(QSettings::IniFormat,  QSettings::UserScope, "VMachineManager", "VMachineManagerSettings", parent)
 {
-    m_settingsDialog = new SettingsDialog();
-    m_settingsDialog->setModal(true);
 
     qDebug() << fileName();
 
-    connect(m_settingsDialog, SIGNAL(accepted()), this, SLOT(save()));
+    m_settingsDialog = 0;
 
 }
 
 Settings::~Settings(){
-    delete m_settingsDialog;
+    if( m_settingsDialog != 0){
+        delete m_settingsDialog;
+    }
 }
 
 QString Settings::databasePath(){
     // Needs to write a value and sync it in order to create the folder the first time the program is started.
     // Database will not open otherwiese.
-    setValue("title", "hi");
+    setValue("title", "hi there");
     sync();
 
     QString settingsPath = fileName();
@@ -102,6 +102,11 @@ QList<Hypervisor*> Settings::hypervisors(){
 
 void  Settings::showDialog(){
 
+    if( m_settingsDialog == 0 ){
+        m_settingsDialog = new SettingsDialog();
+        m_settingsDialog->setModal(true);
+        connect(m_settingsDialog, SIGNAL(accepted()), this, SLOT(save()));
+    }
     m_settingsDialog->setHypervisors(hypervisors());
     m_settingsDialog->show();
 
