@@ -1,8 +1,11 @@
 #ifndef VMSTARTER_H
 #define VMSTARTER_H
 
-#include <QObject>
 #include "hypervisor.h"
+#include "VirtualMachineInterface.h"
+
+#include <QObject>
+
 
 
 class VmStarter: public QObject
@@ -27,6 +30,8 @@ public slots:
 private:
     void clearDatabase() const;
     void initDatabase() const;
+
+    VirtualMachineInterface* vmInstance(QByteArray typ) const;
 
 };
 
