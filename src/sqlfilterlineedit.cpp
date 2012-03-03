@@ -103,8 +103,9 @@ bool SqlFilterLineEdit::hasWildcards(QString filter)
     QRegExp regexp;
     regexp.setPattern(QString(".*[%_\*\?]+.*"));
 
-    if ( regexp.indexIn(filter) >= 0 )
+    if ( regexp.indexIn(filter) >= 0 ) {
         return true;
+    }
 
     return false;
 }

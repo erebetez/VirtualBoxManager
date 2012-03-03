@@ -22,83 +22,83 @@ QString VirtualBoxSshPlugin::info() const{
 
 QList<QByteArray>  VirtualBoxSshPlugin::listVmUUIDs() {
 
-    QList<QByteArray> vmList = vBoxManageProcess( "list vms" );
+    QList<QByteArray> vmList = vBoxManageProcess( "list vms -l" );
 
-    QByteArray vmRow;
+    QString vmRow;
 
-    QList<QByteArray> newList;
+    m_vmHashList.clear();
+    m_vmsUuidList.clear();
 
     for( int i = 0; i < vmList.length(); ++i ){
-        vmRow = vmList.at(i);
+        vmRow = QString(vmList.at(i).simplified());
 
-        vmRow = removeSurroundingChar(vmRow, '{');
+        qDebug() << i << ":" << vmRow;
 
         if( vmRow.isEmpty() ){
             continue;
         }
 
-        newList.append(vmRow);
+        QStringList infoPair = vmRow.split(": ");
+
+        QString key = infoPair.takeFirst().toLower();
+
+        if ( key.operator ==("name")) {
+            QHash<QByteArray, QString> infoHash;
+
+            m_vmHashList.append(infoHash);
+
+            m_vmHashList.last().insert("name", infoPair.last() );
+
+            continue;
+        }
+
+
+        if ( key.operator==("uuid") ) {
+            m_vmHashList.last().insert("UUID", infoPair.last() );
+
+            m_vmsUuidList.append(infoPair.last().toLatin1());
+
+            continue;
+        }
+
+        if ( key.operator==("guest os") ){
+            m_vmHashList.last().insert("ostype", infoPair.last() );
+            continue;
+        }
+
+        if ( key.operator==("state") ){
+            QString state = infoPair.last();
+            state = state.left(state.indexOf("(") );
+            m_vmHashList.last().insert("state", state );
+            continue;
+        }
+
+        if ( key.operator==("memory size") ){
+            m_vmHashList.last().insert("memory", infoPair.last() );
+            continue;
+        }
+
+        if ( key.operator==("cpu exec cap") ){
+            m_vmHashList.last().insert("cpumax", infoPair.last() );
+            continue;
+        }
+
     }
 
-    return newList;
+    return m_vmsUuidList;
 }
 
-QByteArray VirtualBoxSshPlugin::removeSurroundingChar(QByteArray string, const char removeChar){
-
-    string = string.mid( string.indexOf(removeChar) + 1 );
-
-    string.chop(1);
-
-    return string;
-}
 
 ///
 // @return uuid, name, ostype, state, memory, cpumax
 QHash<QByteArray, QString> VirtualBoxSshPlugin::listVmInfo( QByteArray id ) {
 
-    QList<QByteArray> vmInfos = vBoxManageProcess( QByteArray("showvminfo " + id + " --details --machinereadable") );
+    return m_vmHashList.at(m_vmsUuidList.indexOf(id));
 
-    QHash<QByteArray, QString> infoHash;
-
-    foreach(QByteArray vmInfo, vmInfos){
-        QList<QByteArray> infoPair = vmInfo.split('=');
-
-        QString key = QString(infoPair.takeFirst());
-
-        if ( key.operator==("UUID") ){
-            infoHash["UUID"] = removeSurroundingChar(infoPair.last(), '"');
-            continue;
-        }
-
-        if ( key.operator==("name") ){
-            infoHash["name"] = removeSurroundingChar(infoPair.last(), '"');
-            continue;
-        }
-
-        if ( key.operator==("ostype") ){
-            infoHash["ostype"] = removeSurroundingChar(infoPair.last(), '"');
-            continue;
-        }
-
-        if ( key.operator==("VMState") ){
-            infoHash["state"] = removeSurroundingChar(infoPair.last(), '"');
-            continue;
-        }
-
-        if ( key.operator==("memory") ){
-            infoHash["memory"] = infoPair.last();
-            continue;
-        }
-
-        if ( key.operator==("cpuexecutioncap") ){
-            infoHash["cpumax"] = infoPair.last();
-            continue;
-        }
-
-    }
-
-    return infoHash;
 }
+
+
+
 
 
 // Harddisc TODO

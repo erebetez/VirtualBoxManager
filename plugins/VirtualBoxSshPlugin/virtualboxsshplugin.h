@@ -28,12 +28,12 @@ public:
     bool copyVm( const QByteArray id, const QByteArray name ) const;
 
 private:
-
     QList<QByteArray> vBoxManageProcess( QByteArray command ) const;
 
     QByteArray executeInSSHShell( QByteArray param ) const;
 
-    QByteArray removeSurroundingChar( QByteArray string, const char removeChar );
+    QList<QHash<QByteArray, QString> > m_vmHashList;
+    QList<QByteArray> m_vmsUuidList;
 
 };
 
