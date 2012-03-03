@@ -42,7 +42,16 @@ QList<QByteArray>  VirtualBoxSshPlugin::listVmUUIDs() {
 
         QString key = infoPair.takeFirst().toLower();
 
+        if( key.isEmpty() ){
+            continue;
+        }
+
         if ( key.operator ==("name")) {
+
+            if (infoPair.count() > 1)  {
+                continue;
+            }
+
             QHash<QByteArray, QString> infoHash;
 
             m_vmHashList.append(infoHash);
