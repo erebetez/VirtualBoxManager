@@ -110,6 +110,22 @@ QHash<QByteArray, QString> VirtualBoxSshPlugin::listVmInfo( QByteArray id ) {
 bool VirtualBoxSshPlugin::startVm( const QByteArray id ) const{
     QByteArray returnValue = executeInSSHShell("startvm " + id + " --type headless");
     qDebug() << returnValue;
+    return true;
+}
+
+bool VirtualBoxSshPlugin::stopVm(const QByteArray id) const{
+    QByteArray returnValue = executeInSSHShell("controlvm " + id + " poweroff");
+    qDebug() << returnValue;
+    return true;
+}
+
+bool VirtualBoxSshPlugin::copyVm( const QByteArray id, const QByteArray name ) const{
+    QByteArray cloneVm = QByteArray("clonevm " + id + " --register --name " + name);
+
+    QByteArray returnValue = executeInSSHShell(cloneVm);
+
+    qDebug() << returnValue;
+
     return false;
 }
 
@@ -147,14 +163,6 @@ QByteArray VirtualBoxSshPlugin::executeInSSHShell(QByteArray command) const {
     return vBoxProcess.readAll();
 }
 
-bool VirtualBoxSshPlugin::copyVm( const QByteArray id, const QByteArray name ) const{
-    QByteArray cloneVm = QByteArray("clonevm " + id + " --register --name " + name);
 
-    QByteArray returnValue = executeInSSHShell(cloneVm);
-
-    qDebug() << returnValue;
-
-    return false;
-}
 
 Q_EXPORT_PLUGIN2(virtualboxsshplugin, VirtualBoxSshPlugin)

@@ -24,6 +24,7 @@ Q_SIGNALS:
 public slots:
     void populateVmsDb();
     void start(const QByteArray id);
+    void stop(const QByteArray id);
     void copy(const QByteArray id);
 
 private:

@@ -36,7 +36,7 @@ QHash<QByteArray, QString> HypervisorDummy::listVmInfo( QByteArray id ) {
 
     infoHash["UUID"] = id ;
 
-    infoHash["name"] = "name " + id ;
+    infoHash["name"] = "name" + id.right(3) ;
 
     infoHash["ostype"] = "haiku" ;
 
@@ -58,6 +58,11 @@ QHash<QByteArray, QString> HypervisorDummy::listVmInfo( QByteArray id ) {
 
 bool HypervisorDummy::startVm( const QByteArray id ) const{
     qDebug() << "Dummy starting " + id;
+    return true;
+}
+
+bool HypervisorDummy::stopVm(const QByteArray id) const{
+    qDebug() << "Dummy stopping " + id;
     return true;
 }
 

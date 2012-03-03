@@ -66,6 +66,7 @@ void MainWindow::setUpUI()
 
     ui->mainToolBar->addAction(tr("Refresh"), this, SLOT(populateDataBase()) );
     ui->mainToolBar->addAction(tr("Start"), this, SLOT(startVm()) );
+    ui->mainToolBar->addAction(tr("Stop"), this, SLOT(stopVm()) );
     ui->mainToolBar->addAction(tr("Copy"), this, SLOT(copyVm()) );
     ui->mainToolBar->addAction(tr("Settings"), m_settings, SLOT(showDialog()) );
 
@@ -101,6 +102,15 @@ void MainWindow::startVm(){
     m_starter->start(machineId);
 }
 
+void MainWindow::stopVm(){
+    QByteArray machineId = m_dockList->currentMachine();
+
+    if( machineId.isEmpty() ) {
+        return;
+    }
+
+    m_starter->stop(machineId);
+}
 
 void MainWindow::loadPlugins()
 {

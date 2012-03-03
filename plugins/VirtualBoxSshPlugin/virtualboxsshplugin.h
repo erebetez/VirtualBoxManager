@@ -23,6 +23,8 @@ public:
 
     bool startVm( const QByteArray id ) const;
 
+    bool stopVm( const QByteArray id ) const;
+
     bool copyVm( const QByteArray id, const QByteArray name ) const;
 
 private:

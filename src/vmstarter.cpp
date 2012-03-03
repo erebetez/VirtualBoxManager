@@ -99,7 +99,21 @@ void VmStarter::start(const QByteArray id){
             iVMachine->startVm(id);
         }
     }
+}
 
+void VmStarter::stop(const QByteArray id){
+
+    QByteArray hypervisorName = getHypervisorForMachineId(id);
+    VirtualMachineInterface *iVMachine;
+
+    qDebug() << "looking for" << hypervisorName;
+
+    foreach(Hypervisor* hy, m_hypervisorList){
+        if( hy->name() == hypervisorName ){
+            iVMachine = vmInstance(hy);
+            iVMachine->stopVm(id);
+        }
+    }
 }
 
 

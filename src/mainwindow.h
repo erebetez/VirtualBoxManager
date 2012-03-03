@@ -24,6 +24,7 @@ public:
 public slots:
     void copyVm();    
     void startVm();
+    void stopVm();
     void populateDataBase();
 
 private slots:

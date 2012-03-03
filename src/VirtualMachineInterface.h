@@ -25,6 +25,8 @@ public:
 
     virtual bool startVm( const QByteArray id ) const = 0;
 
+    virtual bool stopVm( const QByteArray id ) const = 0;
+
     virtual bool copyVm( const QByteArray id, const QByteArray name ) const = 0;
 
 
