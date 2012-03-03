@@ -16,6 +16,7 @@ public:
     QList<Hypervisor*>  hypervisors();
 
 signals:
+    void settingsChanged();
 
 public slots:
     void showDialog();

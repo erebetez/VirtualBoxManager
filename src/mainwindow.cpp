@@ -1,8 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include "databasehandler.h"
 
 #include "VirtualMachineInterface.h"
+
+
 
 #include <QSettings>
 #include <QPluginLoader>
@@ -15,14 +17,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     m_settings = new Settings(this);
-    loadSettings();
+
+    if (!DatabaseHandler::connectToDatabase(m_settings->databasePath())){
+        return;
+    }
 
     m_starter = new VmStarter(this);
-    m_starter->connectToDatabase(m_settings->databasePath());
+
+    connect(m_settings, SIGNAL(settingsChanged()), this, SLOT(reloadSettings()));
 
     setUpUI();
 
-    loadPlugins();
+    loadSettings();
+
+//    loadPlugins();
 }
 
 MainWindow::~MainWindow()
@@ -42,7 +50,15 @@ void MainWindow::loadSettings(){
     resize(m_settings->value("size", QSize(600, 400)).toSize());
     m_settings->endGroup();
 
+    m_starter->setHypervisorList(m_settings->hypervisors());
 }
+
+void MainWindow::reloadSettings(){
+
+
+    m_starter->setHypervisorList(m_settings->hypervisors());
+}
+
 
 void MainWindow::setUpUI()
 {
@@ -62,28 +78,29 @@ void MainWindow::setUpUI()
 }
 
 void MainWindow::populateDataBase(){
-    m_starter->populateDb(m_settings->hypervisors());
+    m_starter->populateVmsDb();
 }
 
 void MainWindow::copyVm(){
-    QByteArray machine = m_dockList->currentMachine();
+    QByteArray machineId = m_dockList->currentMachine();
 
-    if( machine.isEmpty() ) {
+    if( machineId.isEmpty() ) {
         return;
     }
-//    VirtualBoxSshPlugin::instance()->copyVm(machine, QByteArray("MyClone"));
-    qDebug() << m_starter->getHypervisorForMachineId(machine);
+
+    m_starter->copy(machineId);
 }
 
 void MainWindow::startVm(){
-    QByteArray machine = m_dockList->currentMachine();
+    QByteArray machineId = m_dockList->currentMachine();
 
-    if( machine.isEmpty() ) {
+    if( machineId.isEmpty() ) {
         return;
     }
 
-    qDebug() << m_starter->getHypervisorForMachineId(machine);
+    m_starter->start(machineId);
 }
+
 
 void MainWindow::loadPlugins()
 {

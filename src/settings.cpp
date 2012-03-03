@@ -37,6 +37,7 @@ QString Settings::databasePath(){
 void Settings::save(){
     saveHypervisors();
     sync();
+    emit settingsChanged();
 }
 
 

@@ -19,66 +19,14 @@ VmStarter::VmStarter(QObject *parent)
 {
 }
 
-bool VmStarter::connectToDatabase(const QString &dataBaseFileName)
-{
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
 
-    db.setDatabaseName(dataBaseFileName);
 
-    if (!db.open()) {
-        qDebug() << db.lastError();
-        return false;
-    }
-
-    initDatabase();
-
-    return true;
-}
-
-void VmStarter::clearDatabase() const {
-    QSqlQuery query;
-    query.exec("DROP TABLE virtualmachines");
-}
-
-void VmStarter::initDatabase() const {
-    QSqlQuery query;
-    query.exec("create table IF NOT EXISTS virtualmachines (vmuuid PRIMARY KEY, "
-               "name, "
-               "hypervisor, "
-               "ostype, "
-               "state, "
-               "memorymax, "
-               "cpumax, "
-               "available"
-               ")"
-              );
-
-    query.exec("create table IF NOT EXISTS harddiscs (hduuid PRIMARY KEY, "
-               "vmuuid, "
-               "location, "
-               "maxsize, "
-               "currentsize, "
-               "available"
-               ")"
-              );
-
-    query.exec("create table IF NOT EXISTS hdused (vmuuid, "
-               "hduuid "
-               ")"
-              );
-
-    query.exec("create table IF NOT EXISTS hypervisors (hypervisor PRIMARY KEY, "
-               "host, "
-               "typ, "
-               "user  "
-               ")"
-              );
-
-//    qDebug() << query.lastError();
+void VmStarter::setHypervisorList(const QList<Hypervisor *> list){
+   m_hypervisorList = list;
 }
 
 
-void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
+void VmStarter::populateVmsDb(){
 
     QSqlQuery query("UPDATE virtualmachines SET available = 'F'");
 
@@ -93,12 +41,10 @@ void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
 
     VirtualMachineInterface *iVMachine;
 
-    foreach(Hypervisor* hy, hypervisorList){
+    foreach(Hypervisor* hy, m_hypervisorList){
         qDebug() << "checkingout: " << hy->name();
 
-        iVMachine = vmInstance(hy->typ());
-        iVMachine->setHostName(hy->adress());
-        iVMachine->setLoginName(hy->user());
+        iVMachine = vmInstance(hy);
 
         QList<QByteArray> virtualMachineList = iVMachine->listVmUUIDs();
 
@@ -136,18 +82,38 @@ void VmStarter::populateDb(QList<Hypervisor*> hypervisorList){
                 qDebug() << "Update" << updateQuery.lastError();
             }
         }
-
     }
-
     emit dbRefreshed();
 }
 
+void VmStarter::start(const QByteArray id){
 
-VirtualMachineInterface* VmStarter::vmInstance(QByteArray typ) const {
+    QByteArray hypervisorName = getHypervisorForMachineId(id);
+    VirtualMachineInterface *iVMachine;
+
+    qDebug() << "looking for" << hypervisorName;
+
+    foreach(Hypervisor* hy, m_hypervisorList){
+        if( hy->name() == hypervisorName ){
+            iVMachine = vmInstance(hy);
+            iVMachine->startVm(id);
+        }
+    }
+
+}
+
+
+void VmStarter::copy(const QByteArray id){
+
+}
+
+VirtualMachineInterface* VmStarter::vmInstance(Hypervisor *hy) const {
     foreach (QObject *plugin, QPluginLoader::staticInstances()){
         VirtualMachineInterface *iVMachine = qobject_cast<VirtualMachineInterface *>(plugin);
 
-        if(typ == iVMachine->name()){
+        if(hy->typ() == iVMachine->name()){
+            iVMachine->setHostName(hy->adress());
+            iVMachine->setLoginName(hy->user());
             return iVMachine;
         }
     }
@@ -155,7 +121,7 @@ VirtualMachineInterface* VmStarter::vmInstance(QByteArray typ) const {
 }
 
 
-QByteArray VmStarter::getHypervisorForMachineId(const QByteArray id) {
+QByteArray VmStarter::getHypervisorForMachineId(const QByteArray id) const {
    QSqlQuery query;
    query.prepare("SELECT h.hypervisor FROM hypervisors h INNER JOIN virtualmachines m ON h.hypervisor = m.hypervisor WHERE m.vmuuid like ?");
    query.addBindValue(id);

@@ -16,22 +16,22 @@ public:
     VmStarter(QObject *parent);
     virtual ~VmStarter();
 
-    bool connectToDatabase(const QString &dataBaseFileName);
-
-    QByteArray getHypervisorForMachineId(const QByteArray id);
+    void setHypervisorList(const QList<Hypervisor*> list);
 
 Q_SIGNALS:
     void dbRefreshed();
 
 public slots:
-    void populateDb(QList<Hypervisor*> hypervisorList);
-
+    void populateVmsDb();
+    void start(const QByteArray id);
+    void copy(const QByteArray id);
 
 private:
-    void clearDatabase() const;
-    void initDatabase() const;
+    VirtualMachineInterface* vmInstance(Hypervisor *hy) const;
 
-    VirtualMachineInterface* vmInstance(QByteArray typ) const;
+    QByteArray getHypervisorForMachineId(const QByteArray id) const;
+
+    QList<Hypervisor*> m_hypervisorList;
 
 };
 

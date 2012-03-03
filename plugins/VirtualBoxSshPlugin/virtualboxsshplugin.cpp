@@ -108,7 +108,8 @@ QHash<QByteArray, QString> VirtualBoxSshPlugin::listVmInfo( QByteArray id ) {
 
 
 bool VirtualBoxSshPlugin::startVm( const QByteArray id ) const{
-    executeInSSHShell("startvm " + id);
+    QByteArray returnValue = executeInSSHShell("startvm " + id + " --type headless");
+    qDebug() << returnValue;
     return false;
 }
 
@@ -136,7 +137,7 @@ QByteArray VirtualBoxSshPlugin::executeInSSHShell(QByteArray command) const {
     // now that we are on the host, execute the vmBoxManage
     command.prepend("VBoxManage ");
 
-    //qDebug() << "ssh Command: " << command;
+    qDebug() << "ssh Command: " << command;
 
     vBoxProcess.write(command);
     vBoxProcess.closeWriteChannel();

@@ -24,8 +24,11 @@ public:
 public slots:
     void copyVm();    
     void startVm();
-    void loadPlugins();
     void populateDataBase();
+
+private slots:
+    void loadPlugins();
+    void reloadSettings();
 
 private:
     Ui::MainWindow *ui;
@@ -42,7 +45,7 @@ private:
 
     ListDialog *m_dockList;
 
-//    QList<Hypervisor*> m_hypervisorList;
+
 
 };
 
